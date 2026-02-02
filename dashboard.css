@@ -1,0 +1,287 @@
+:root {
+    --green: #2ecc71;
+    --navy: #001f3f;
+    --bg-light: #f4f7f6;
+    --white: #ffffff;
+    --text-main: #333;
+    --text-light: #666;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    line-height: 1.6;
+}
+
+/* --- Live Forex Ticker Styles --- */
+.forex-ticker {
+    background: #000;
+    color: white;
+    padding: 10px 0;
+    font-size: 0.85rem;
+    overflow: hidden;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 3000;
+}
+
+.ticker-wrapper {
+    display: inline-block;
+    padding-left: 100%;
+    animation: ticker-move 30s linear infinite;
+}
+
+@keyframes ticker-move {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(-100%, 0); }
+}
+
+.ticker-item {
+    display: inline-block;
+    margin-right: 50px;
+    font-weight: 600;
+}
+
+.ticker-val {
+    color: var(--green);
+    margin-left: 5px;
+}
+
+/* Sidebar/Header Space */
+.top-bar {
+    background: var(--white);
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.dashboard-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Balance Card */
+.balance-card {
+    background: var(--navy);
+    color: white;
+    padding: 40px;
+    border-radius: 24px;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: 0 15px 30px rgba(0,31,63,0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.balance-card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: rgba(46, 204, 113, 0.1);
+    border-radius: 50%;
+}
+
+.balance-label {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.balance-amount {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin: 10px 0;
+}
+
+/* Action Buttons Grid */
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.action-btn {
+    background: var(--white);
+    border: none;
+    padding: 25px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    text-align: center;
+    font-weight: 700;
+    color: var(--navy);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.action-btn:hover {
+    transform: translateY(-5px);
+    background: var(--green);
+    color: white;
+}
+
+.action-icon {
+    font-size: 28px;
+}
+
+/* Transactions Section */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.transaction-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.transaction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.transaction-item:last-child {
+    border-bottom: none;
+}
+
+.tx-info h4 {
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.tx-info p {
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+.tx-amount {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.amt-plus { color: var(--green); }
+.amt-minus { color: #e74c3c; }
+
+/* Modal Logic */
+.db-modal {
+    display: none;
+    position: fixed;
+    z-index: 4000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(5px);
+}
+
+.db-modal-content {
+    background: white;
+    width: 90%;
+    max-width: 450px;
+    margin: 80px auto;
+    padding: 30px;
+    border-radius: 24px;
+    position: relative;
+    animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.close-x {
+    position: absolute;
+    right: 25px;
+    top: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-light);
+}
+
+/* Deposit UI Details */
+.bank-details-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 20px;
+    border-radius: 15px;
+    margin: 20px 0;
+    text-align: left;
+}
+
+.bank-details-box p {
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+}
+
+.ref-code {
+    color: var(--green);
+    font-weight: 800;
+    font-family: monospace;
+    font-size: 1.1rem;
+}
+
+.receive-code-display {
+    background: var(--bg-light);
+    padding: 20px;
+    font-size: 1.8rem;
+    letter-spacing: 4px;
+    font-weight: 800;
+    margin: 20px 0;
+    border-radius: 12px;
+    border: 2px dashed var(--navy);
+    color: var(--navy);
+}
+
+input[type="file"] {
+    margin-top: 10px;
+    font-size: 0.8rem;
+}
+
+.primary-btn {
+    width: 100%;
+    background: var(--navy);
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.primary-btn:hover { background: #002d5c; }
+
+@media (max-width: 768px) {
+    .action-grid { grid-template-columns: repeat(2, 1fr); }
+    .balance-amount { font-size: 2.5rem; }
+}

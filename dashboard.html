@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayAfrika | Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard.css">
+
+</head>
+<body>
+
+    <div class="forex-ticker">
+        <div class="ticker-wrapper">
+            <span class="ticker-item">ZAR/NGN <span class="ticker-val" id="zarNgn">--.--</span></span>
+            <span class="ticker-item">ZAR/JPY <span class="ticker-val" id="zarJpy">--.--</span></span>
+            <span class="ticker-item">USD/ZAR <span class="ticker-val" id="usdZar">--.--</span></span>
+            <span class="ticker-item">GBP/ZAR <span class="ticker-val" id="gbpZar">--.--</span></span>
+            <span class="ticker-item">ZAR/NGN <span class="ticker-val" id="zarNgn2">--.--</span></span>
+            <span class="ticker-item">ZAR/JPY <span class="ticker-val" id="zarJpy2">--.--</span></span>
+        </div>
+    </div>
+
+    <header class="top-bar">
+        <img src="pay1.png" alt="PayAfrika" style="height: 30px;">
+        <div style="font-weight: 600;">Welcome, User</div>
+    </header>
+
+    <div class="dashboard-container">
+        <div class="balance-card">
+            <p class="balance-label">Available Balance</p>
+            <div class="balance-amount" id="currentBalance">R 12,450.00</div>
+            <p style="font-size: 0.8rem; opacity: 0.7;">Account Active • Standard Tier</p>
+        </div>
+
+        <div class="action-grid">
+            <button class="action-btn" onclick="openModal('depositMethodModal')">
+                <span class="action-icon">🏦</span>
+                <span>Deposit</span>
+            </button>
+            <button class="action-btn" onclick="openModal('sendModal')">
+                <span class="action-icon">💸</span>
+                <span>Send</span>
+            </button>
+            <button class="action-btn" onclick="showReceiveCode()">
+                <span class="action-icon">📩</span>
+                <span>Receive</span>
+            </button>
+            <button class="action-btn" onclick="openModal('withdrawModal')">
+                <span class="action-icon">🏧</span>
+                <span>Withdraw</span>
+            </button>
+        </div>
+
+        <div class="section-header">
+            <h3 style="font-weight: 800;">Recent Transactions</h3>
+            <a href="#" style="color: var(--green); text-decoration: none; font-size: 0.9rem; font-weight: 600;">View All</a>
+        </div>
+
+        <div class="transaction-card">
+            <div class="transaction-item">
+                <div class="tx-info">
+                    <h4>EFT Deposit</h4>
+                    <p>Feb 2, 2026 • Reference: PA-782</p>
+                </div>
+                <div class="tx-amount amt-plus">+ R 2,500.00</div>
+            </div>
+            <div class="transaction-item">
+                <div class="tx-info">
+                    <h4>Transfer to #AFR990</h4>
+                    <p>Jan 30, 2026 • Completed</p>
+                </div>
+                <div class="tx-amount amt-minus">- R 450.00</div>
+            </div>
+            <div class="transaction-item">
+                <div class="tx-info">
+                    <h4>ATM Cash Deposit</h4>
+                    <p>Jan 25, 2026 • Verified</p>
+                </div>
+                <div class="tx-amount amt-plus">+ R 1,000.00</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="depositMethodModal" class="db-modal">
+        <div class="db-modal-content">
+            <span class="close-x" onclick="closeModal('depositMethodModal')">&times;</span>
+            <h3 style="margin-bottom: 20px;">Deposit Methods</h3>
+            <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 20px;">Choose how you'd like to fund your PayAfrika wallet.</p>
+            
+            <div style="display: grid; gap: 15px;">
+                <button class="action-btn" style="width:100%; flex-direction: row; justify-content: start; padding: 20px; border: 1px solid #eee;" onclick="showDepositDetails('EFT')">
+                    <span class="action-icon" style="margin-right: 15px;">🌐</span>
+                    <div style="text-align: left;">
+                        <div style="font-weight: 800;">Bank EFT</div>
+                        <div style="font-size: 0.7rem; font-weight: 400;">Transfer from your banking app</div>
+                    </div>
+                </button>
+
+                <button class="action-btn" style="width:100%; flex-direction: row; justify-content: start; padding: 20px; border: 1px solid #eee;" onclick="showDepositDetails('ATM')">
+                    <span class="action-icon" style="margin-right: 15px;">🏧</span>
+                    <div style="text-align: left;">
+                        <div style="font-weight: 800;">ATM Deposit</div>
+                        <div style="font-size: 0.7rem; font-weight: 400;">Deposit cash at an FNB ATM</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="depositDetailsModal" class="db-modal">
+        <div class="db-modal-content">
+            <span class="close-x" onclick="closeModal('depositDetailsModal')">&times;</span>
+            <h3 id="depTitle">EFT Deposit Details</h3>
+            
+            <div class="bank-details-box">
+                <p><span>Bank:</span> <strong>First National Bank</strong></p>
+                <p><span>Acc Name:</span> <strong>PayAfrika (Pty) Ltd</strong></p>
+                <p><span>Acc Number:</span> <strong>62900112233</strong></p>
+                <p><span>Branch:</span> <strong>250655</strong></p>
+                <p><span>Reference:</span> <span class="ref-code">PA-USER-782</span></p>
+            </div>
+
+            <div style="text-align: left;">
+                <label style="font-size: 0.8rem; font-weight: 700;">Upload Proof of Payment (PDF/JPG)</label>
+                <input type="file" id="popUpload">
+            </div>
+
+            <button class="primary-btn" onclick="handleDepositSubmit()">I've Made the Deposit</button>
+        </div>
+    </div>
+
+    <div id="receiveModal" class="db-modal">
+        <div class="db-modal-content" style="text-align: center;">
+            <span class="close-x" onclick="closeModal('receiveModal')">&times;</span>
+            <h3>Receive Money</h3>
+            <p style="margin-top: 10px; font-size: 0.9rem; color: var(--text-light);">Share this code with the sender to receive funds instantly.</p>
+            <div class="receive-code-display" id="userReceiveCode">PA-XXXX</div>
+            <button class="primary-btn" style="background: var(--green);" onclick="closeModal('receiveModal')">Copy & Close</button>
+        </div>
+    </div>
+
+    <div id="withdrawModal" class="db-modal">
+        <div class="db-modal-content">
+            <span class="close-x" onclick="closeModal('withdrawModal')">&times;</span>
+            <h3>Withdraw Funds</h3>
+            <div style="text-align: left; margin-top: 20px;">
+                <label style="font-size: 0.8rem; font-weight: 700;">Amount (ZAR)</label>
+                <input type="number" placeholder="e.g. 500" style="width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd;">
+                
+                <label style="font-size: 0.8rem; font-weight: 700;">Select Saved Bank</label>
+                <select style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd;">
+                    <option>Standard Bank - ****4421</option>
+                    <option>Add New Bank Account</option>
+                </select>
+            </div>
+            <button class="primary-btn" onclick="alert('Withdrawal request received.')">Process Withdrawal</button>
+        </div>
+    </div>
+
+    <div id="sendModal" class="db-modal">
+        <div class="db-modal-content">
+            <span class="close-x" onclick="closeModal('sendModal')">&times;</span>
+            <h3 style="margin-bottom: 10px;">Send Money</h3>
+            <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 20px;">
+                Enter the receiver's PayAfrika code to locate their wallet.
+            </p>
+            
+            <div style="text-align: left;">
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <label style="font-size: 0.75rem; font-weight: 700; display: block; margin-bottom: 5px;">RECEIVER CODE</label>
+                    <input type="text" id="receiverCode" placeholder="e.g. PA-X8K2L" 
+                        style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-family: monospace; text-transform: uppercase;">
+                </div>
+    
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <label style="font-size: 0.75rem; font-weight: 700; display: block; margin-bottom: 5px;">AMOUNT (ZAR)</label>
+                    <input type="number" id="sendAmount" placeholder="0.00" 
+                        style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd;">
+                </div>
+    
+                <div id="recipientPreview" style="display: none; background: #f0fff4; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--green);">
+                    <p style="font-size: 0.8rem; color: var(--navy); font-weight: 600;">Recipient Found: <span id="recipientName">User #AFR990</span></p>
+                </div>
+            </div>
+    
+            <button class="primary-btn" style="background: var(--navy);" onclick="handleSendMoney()">Verify & Transfer</button>
+        </div>
+    </div>
+    <script src="dashboard.js"></script>
+</body>
+</html>

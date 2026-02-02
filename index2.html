@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PayAfrika - Promoting Inclusive Economic Growth Within South Africa</title>
+<link rel="icon" href="./assets/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="assets/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Lexend+Deca:wght@100..900&amp;display=swap" rel="stylesheet">
+<style>
+.header {
+background: transparent;
+transition: background-color 0.3s ease;
+}
+.hero-image img{
+z-index: -1;
+}
+.hero-content h1, .hero-content p, .hero-content .app-buttons, .social-links {
+transform: translateY(15px) !important;
+}
+.hero-content p {
+width: 730px;
+}
+.header.scrolled {
+background: #ffffff;
+}
+
+/* --- PRELOADER --- */
+#preloader {
+position: fixed;
+inset: 0;
+background: #ffffff;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+z-index: 9999;
+transition: opacity .4s ease, visibility 0s linear .4s;
+}
+#preloader img {
+width: 140px;
+height: auto;
+animation: preloader-bounce 3.6s infinite ease-in-out;
+will-change: transform;
+}
+#preloader .loader-dots {
+display: flex;
+gap: 8px;
+margin-top: 18px;
+}
+#preloader .loader-dots span {
+width: 8px;
+height: 8px;
+border-radius: 50%;
+background: #111;
+opacity: .35;
+animation: preloader-dots 3.6s infinite ease-in-out;
+}
+#preloader .loader-dots span:nth-child(2) { animation-delay: .15s; }
+#preloader .loader-dots span:nth-child(3) { animation-delay: .3s; }
+
+@keyframes preloader-bounce {
+0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+40% { transform: translateY(-22px); }
+60% { transform: translateY(-10px); }
+}
+@keyframes preloader-dots {
+0%, 80%, 100% { transform: scale(0.8); opacity: .35; }
+40% { transform: scale(1); opacity: 1; }
+}
+#preloader.preloader-hide {
+opacity: 0;
+visibility: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+#preloader img { animation: none; }
+#preloader .loader-dots span { animation: none; opacity: .6; }
+}
+#b2bContactModal {
+overflow-y: scroll;
+}
+#b2bForm{
+text-align: left;
+}
+#b2bForm input, #b2bForm textarea {
+padding: 10px 12px;
+border: 1px solid #ccc;
+border-radius: 8px;
+font-size: 14px;
+width: 100%;
+margin-bottom: 1rem;
+transition: all 0.2s ease;
+}
+</style>
+</head>
+<body>
+
+<!-- PRELOADER -->
+<div id="preloader" role="status" aria-label="Loading">
+<img src="./assets/logo.png" alt="PayAfrika Logo">
+<div class="loader-dots" aria-hidden="true">
+<span></span><span></span><span></span>
+</div>
+</div>
+
+<!-- Header -->
+<header class="header">
+<div class="container">
+<div class="logo">
+<a href="/">
+<img src="./assets/logo.png" alt="PayAfrika Logo">
+</a>
+</div>
+<nav class="desktop-nav">
+<ul>
+<li><a href="#b2b-section" class="nav-link">B2B</a></li>
+<li><a href="https://loans.payafrika.co.za/login" target="_blank" class="nav-link">Loans</a></li>
+<li><a href="#import-export-section" class="nav-link">Import & Export</a></li>
+<li><a href="contact" class="nav-link">Queries</a></li>
+<li><a href="https://wa.link/d9ftyz" target="_blank" class="btn btn-primary">24/7 Chat line</a></li>
+</ul>
+</nav>
+<div class="mobile-nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+<div class="hamburger"></div>
+<div class="hamburger"></div>
+<div class="hamburger"></div>
+</div>
+</div>
+</header>
+
+<!-- Mobile Navigation -->
+<nav class="mobile-nav-menu">
+<ul>
+<!--<li><a href="about" class="nav-link">About</a></li>-->
+<li><a href="https://loans.payafrika.co.za/login" target="_blank" class="nav-link">Loans</a></li>
+<li><a href="contact" class="nav-link">Contact</a></li>
+<li><a href="https://wa.link/d9ftyz" target="_blank" class="btn btn-primary">24/7 Chat line</a></li>
+</ul>
+</nav>
+<div class="mobile-nav-overlay"></div>
+
+<main>
+<!-- Hero Section -->
+<section class="hero-section">
+<div class="container">
+<div class="hero-content">
+<h1>Welcome to <br>PayAfrika Group</h1>
+<p>We are your trusted microfinance partner specifically focused on <br>providing financial services to individuals and businesses in South Africa</p>
+<div class="app-buttons">
+<a href="https://play.google.com/store/apps/details?id=com.payafrika.client&pcampaignid=web_share" target="_blank" class="app-button">
+<img src="./assets/playstore.png" alt="Google Play Store">
+</a>
+<button class="app-button action-button">
+<img src="./assets/appstore.png" alt="App Store">
+</button>
+</div>
+</div>
+<div class="hero-image">
+<img src="assets/pay1.png" alt="Woman wearing PayAfrika t-shirt" style="width: 390px;">
+</div>
+</div>
+</section>
+
+<!-- Mission Section -->
+<section class="mission-section">
+<div class="container">
+<p>PayAfrika Group provides seamless facilitation of international trade between South Africa, Nigeria, and beyond, fast and reliable cross-border B2B payment solutions with full compliance support, and competitive digital currency exchange services for crypto, digital currencies, and other assets.</p>
+</div>
+</section>
+
+<!-- Feature Sections -->
+<section class="feature-section" id="b2b-section">
+<div class="container">
+<!-- B2B Payment Facilitation -->
+<div class="feature-card reverse">
+<div class="feature-image">
+<img src="assets/modern-african-american-man.jpg" alt="B2B Payment Facilitation">
+</div>
+<div class="feature-content">
+<h2>B2B Payment Facilitation</h2>
+<p><b>PayAfrika provides seamless payment solutions for businesses, companies, and entities engaged in trade and commerce, particularly those purchasing goods and services from South Africa. 
+
+<br><br>Our services go beyond payments — we broker deals, negotiate favorable terms, and ensure timely settlements. And when immediate funding becomes a challenge, PayAfrika can step in to advance payments on your behalf, empowering you to seize opportunities without delay.</p>
+<button class="btn btn-secondary action-button" data-modal-target="b2bContactModal">Get Started</button>
+</div>
+</div>
+
+<!-- Microfinance Solutions -->
+<div class="feature-card">
+<div class="feature-image">
+<!--<img src="assets/medium-shot-black-woman-running-small-business2.jpg" alt="Microfinance Solutions">-->
+<div class="calculator-content">
+<h2>Loan Calculator</h2>
+<p>Please enter loan amount between R1000 and R500 000</p>
+
+<div class="calculator-form">
+<div class="form-group">
+<label>Amount</label>
+<div class="slider-container">
+<input type="range" id="loanAmount" min="1000" max="500000" value="50000" class="slider">
+<div class="amount-display">R50,000</div>
+<div class="slider-labels">
+<span>R1,000</span>
+<span>R500,000</span>
+</div>
+</div>
+</div>
+<div class="form-group">
+<label>Payment Period</label>
+<div class="slider-container">
+<input type="range" id="paymentPeriod" min="1" max="60" value="12" class="slider">
+<div class="period-display">12 months</div>
+<div class="slider-labels">
+<span>1 month</span>
+<span>5 years</span>
+</div>
+</div>
+</div>
+<div class="repayment-info">
+<p>Your Monthly Repayment will be</p>
+<div class="amount-display" id="repayment-amount">R5,500</div>
+</div>
+<!--<a ref="https://loans.payafrika.co.za/" class="btn btn-secondary action-button" style="font-size: 14px;border-radius: 50px;">Apply for a Loan</a>-->
+</div>
+</div>
+</div>
+<div class="feature-content">
+<h2>Microfinance Solutions</h2>
+<p>Flexible personal and business loans tailored to meet your unique financial needs.</p>
+<p>PayAfrika offers flexible loans tailored to your unique financial needs. Whether you’re starting a small business, expanding an existing venture, or addressing personal financial requirements, our microfinance solutions are designed to support your growth.
+
+<br><br>We are committed to empowering individuals and businesses to achieve their goals through accessible and responsible lending.</p>
+
+<a href="https://loans.payafrika.co.za/login" target="_blank" class="btn btn-secondary">Apply for a Loan</a>
+</div>
+</div>
+
+<!-- Import & Export Services -->
+<div class="feature-card reverse" id="import-export-section">
+<div class="feature-image">
+<img src="assets/modern-african-american-man-beige-suit.jpg" alt="Import & Export Services">
+</div>
+<div class="feature-content">
+<h2>Import & Export Services</h2>
+<p><b>End-to-end support for cross-border trade, logistics, and currency exchange.</b></p>
+<p>At PayAfrika, we make international trade seamless with comprehensive solutions that simplify operations and reduce costs. Whether you’re importing goods into South Africa or exporting from it, we deliver smooth, reliable, and cost-effective trade services — every step of the way.</p>
+
+
+<button class="btn btn-secondary action-button" data-modal-target="b2bContactModal">Get Started</button>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section">
+<div class="container">
+<h2>What people say about PayAfrika</h2>
+<div class="testimonials-slider-wrapper">
+<div class="testimonials-grid">
+<div class="testimonial-card">
+<div class="stars">
+<span><img src="assets/star.svg" alt="Star icon"></span>
+<span><img src="assets/star.svg" alt="Star icon"></span>
+<span><img src="assets/star.svg" alt="Star icon"></span>
+<span><img src="assets/star.svg" alt="Star icon"></span>
+<span><img src="assets/star.svg" alt="Star icon"></span>
+</div>
+<p>"PayAfrika has been an exceptional business support structure for SASA Communication. We truly appreciate your professionalism and dedication. Thank you for being a reliable partner."</p>
+<div class="author">
+<img src="./assets/testimonial5.png" alt="Avatar of Mohammed Ahmed">
+<div>
+<span>Mohammed Ahmed</span>
+<span class="profession">CEO, SASA Communication (Pty) Ltd</span>
+</div>
+</div>
+</div>
+<div class="testimonial-card">
+<div class="stars">
+<span><img src="assets/star.svg" alt="Star icon"></span>
+<span><img src="assets/star.svg" alt="Star icon"></span>
+<span><img src="assets/star.svg" alt="Star icon"></span>
+<span><img src="assets/star.svg" alt="Star icon"></span>
+<span><img src="assets/star.svg" alt="Star icon"></span>
+</div>
+<p>"PayAfrika has been an excellent Business-to-Business facilitator. I'm glad we placed our trust in you to manage our import services from South Africa to Nigeria — your efficiency and reliability have truly exceeded our expectations."</p>
+<div class="author">
+<img src="./assets/testimonial2.png" alt="Avatar of Oyiwola Femi Clement">
+<div>
+<span>Oyiwola Femi Clement</span>
+<span class="profession">CEO, Clemco Integrated Resources (Nigeria) Ltd</span>
+</div>
+</div>
+</div>
+<div class="testimonial-card">
+<div class="stars">
+<span><img src="assets/star.svg" alt="Star icon"></span>
+<span><img src="assets/star.svg" alt="Star icon"></span>
+<span><img src="assets/star.svg" alt="Star icon"></span>
+<span><img src="assets/star.svg" alt="Star icon"></span>
+<span><img src="assets/star.svg" alt="Star icon"></span>
+</div>
+<p>"Fantastic services received. Negotiating and concluding business transactions in Nigeria has been seamless, thanks to your support. I truly appreciate your commitment to Pan-Africanism."</p>
+<div class="author">
+<img src="./assets/testimonial3.png" alt="Avatar of Ujunwa M. Ukoh">
+<div>
+<span>Ujunwa M. Ukoh</span>
+<span class="profession">Director, Horion Education (Pty) Ltd</span>
+</div>
+</div>
+</div>
+<div class="testimonial-card">
+<div class="stars">
+<span><img src="assets/star.svg" alt="Star icon"></span>
+<span><img src="assets/star.svg" alt="Star icon"></span>
+<span><img src="assets/star.svg" alt="Star icon"></span>
+<span><img src="assets/star.svg" alt="Star icon"></span>
+<span><img src="assets/star.svg" alt="Star icon"></span>
+</div>
+<p>"I am truly thrilled by the swiftness with which you respond to queries. Your efficiency is impressive, and I'm genuinely grateful for the support. Wishing you more wins!"</p>
+<div class="author">
+<img src="./assets/testimonial4.png" alt="Avatar of Keneilwe Sebola">
+<div>
+<span>Keneilwe Sebola (PhD)</span>
+<span class="profession">Strategic Communications Specialist & Media Practitioner</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="slider-controls">
+<button class="slider-arrow prev-arrow" aria-label="Previous testimonial">
+<img src="./assets/arrow-left.png" alt="Left arrow">
+</button>
+<button class="slider-arrow next-arrow" aria-label="Next testimonial">
+<img src="./assets/arrow-right.png" alt="Right arrow">
+</button>
+</div>
+</div>
+</section>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+<div class="container">
+<div class="footer-col company-info">
+<div class="logo">
+<img src="./assets/logo.png" alt="PayAfrika Logo">
+</div>
+<div class="footer-ext">
+<p>From Cross-Border Commerce to Crypto — PayAfrika Powers It All.</p>
+<div class="social-icons">
+<a href="https://instagram.com/payafrika" target="_blank" aria-label="Instagram">
+<img src="./assets/instagram.png" alt="Instagram icon">
+</a>
+<a href="https://facebook.com/payafrika" target="_blank" aria-label="Facebook">
+<img src="./assets/facebook.png" alt="Facebook icon">
+</a>
+</div>
+</div>
+</div>
+<div class="footer-col">
+<h3>Explore</h3>
+<ul>
+<li><a href="/">Home</a></li>
+<li><a href="privacy-policy">Privacy policy</a></li>
+<li><a href="terms-of-use">Terms of use</a></li>
+<li><a href="assets/PAIA-Manuals.pdf">PAIA Manuals</a></li>
+</ul>
+<br><br>
+<h3>Products & Services</h3>
+<ul>
+<li><a href="#">B2B Payment Facilitation</a></li>
+<li><a href="https://loans.payafrika.co.za/login.php" target="_blank">Microfinance Solutions</a></li>
+<li><a href="javascript:void(0);" data-modal-target="b2bContactModal">Import & Export Services</a></li>
+<li><a href="#">Travels & Tours</a></li>
+</ul>
+</div>
+<div class="footer-col">
+<h3>Contact Us</h3>
+<div class="contact-details">
+<!--<p><strong>Branches:</strong><br>-->
+<!--Refer to our Branch Locator for the address and contact details of the branch closest to you.</p><br>-->
+
+<p><strong>Head Office</strong><br>
+PayAfrika Group (Pty) Ltd<br>
+31 Kilburn Street, Horizon,<br>
+Roodepoort, 1724</p><br>
+
+<p><strong>General Enquiries:</strong><br>
+info@payafrika.co.za</p><br>
+
+<p><strong>POPIA / PAIA Information Queries:</strong>
+compliance@payafrika.co.za</p>
+</div>
+</div>
+<div class="footer-col">
+<h3>Help Lines:</h3>
+<div class="help-lines">
+<p><strong>General Inquiry & Help Line:</strong><br>
++27 87 223 5310</p><br>
+
+<p><strong>Pay Afrika Support Team:</strong><br>
++27 21 007 1821</p><br>
+
+<p><strong>Pay Afrika B2B Facilitation:</strong><br>
++27 21 007 1821</p><br>
+
+<p><strong>PayAfrika Loans & Credit:</strong><br>
++27 10 449 3325</p><br>
+
+<ul>
+<li><a href="assets/AML.pdf">Anti-Money Laundering (AML) Policy</a></li>
+<li><a href="assets/Complaints-Management-Framework.pdf">Complaints Management Framework</a></li>
+<li><a href="assets/POPIA-Compliant-Data-Protection-Policy.pdf">Data Protection Policy (POPIA-Compliant)</a></li>
+<li><a href="assets/Treating-Customers-Fairly-(TCF)-Policy.pdf">Treating Customers Fairly (TCF) Policy</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="footer-bottom">
+<div class="container">
+<p>Copyright - © PayAfrika - A division of PayAfrika (Pty) Ltd Authorised Credit Provider</p>
+</div>
+</div>
+</footer>
+
+<!-- Coming Soon Modal -->
+<div class="modal-overlay" id="comingSoonModal">
+<div class="modal-content">
+<h2>Coming Soon!</h2>
+<p>This feature is under development. Stay tuned!</p>
+<button class="btn btn-primary modal-close-btn">Close</button>
+</div>
+</div>
+
+<!-- B2B Payment Facilitation Contact Form Modal -->
+<div class="modal-overlay" id="b2bContactModal">
+<div class="modal-content" style="max-width:700px; background:#fff; padding:20px; border-radius:12px;margin: 0 auto;">
+<h2 style="text-align: center;">Inquiry</h2>
+<form id="b2bForm">
+<!-- Company Details -->
+<h3>Company Details</h3>
+<label>Business Name:</label>
+<input type="text" name="businessName" required>
+
+<label>Business Address:</label>
+<input type="text" name="businessAddress" required>
+
+<label>Business WhatsApp:</label>
+<input type="text" name="businessWhatsapp">
+
+<label>Business Mobile:</label>
+<input type="text" name="businessMobile">
+
+<label>Business Telephone:</label>
+<input type="text" name="businessTelephone">
+
+<label>Business Email:</label>
+<input type="email" name="businessEmail" required>
+
+<!-- Contact Person -->
+<h3>Contact Person</h3>
+<label>Name:</label>
+<input type="text" name="contactName" required>
+
+<label>Position:</label>
+<input type="text" name="contactPosition">
+
+<label>WhatsApp:</label>
+<input type="text" name="contactWhatsapp">
+
+<label>Mobile:</label>
+<input type="text" name="contactMobile">
+
+<label>Email:</label>
+<input type="email" name="contactEmail" required>
+
+<!-- Project Description -->
+<h3>Project Description</h3>
+<textarea name="projectDescription" rows="4" required></textarea>
+
+<!-- Buttons -->
+<div style="margin-top:15px;">
+<button type="submit" class="btn btn-primary">Submit</button>
+</div>
+</form>
+
+<!-- Feedback Message -->
+<div id="b2bMessage" style="margin-top:15px; display:none;"></div>
+</div>
+</div>
+
+<script src="assets/script2.js"></script>
+<script>
+function openModal(modalId) {
+document.getElementById(modalId).style.display = "block";
+}
+function closeModal(modalId) {
+document.getElementById(modalId).style.display = "none";
+}
+document.querySelectorAll('.modal-close-btn').forEach(button => {
+button.addEventListener('click', function() {
+closeModal(this.closest('.modal-overlay').id);
+});
+});
+
+/* --- PRELOADER --- */
+window.addEventListener('load', function () {
+const pre = document.getElementById('preloader');
+if (!pre) return;
+// Keep it for 3 seconds minimum
+setTimeout(() => {
+pre.classList.add('preloader-hide');
+setTimeout(() => pre.remove(), 450);
+}, 3000);
+});
+</script>
+<script>
+document.getElementById("b2bForm").addEventListener("submit", function(e) {
+e.preventDefault();
+
+const formData = new FormData(this);
+
+fetch("send-b2b-email.php", {
+method: "POST",
+body: formData
+})
+.then(res => res.text())
+.then(response => {
+document.getElementById("b2bMessage").style.display = "block";
+document.getElementById("b2bMessage").innerHTML = "<p style='color:green;'>✅ Inquiry submitted successfully!</p>";
+this.reset();
+})
+.catch(error => {
+document.getElementById("b2bMessage").style.display = "block";
+document.getElementById("b2bMessage").innerHTML = "<p style='color:red;'>❌ Something went wrong. Please try again.</p>";
+});
+});
+</script>
+</body>
+</html>

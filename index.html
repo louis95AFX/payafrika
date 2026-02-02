@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayAfrika | Microfinance & B2B Trade Facilitation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .services-grid {
+          display: flex;               /* Horizontal row */
+          justify-content: space-between; /* Even spacing */
+          gap: 20px;                   /* Space between cards */
+          flex-wrap: nowrap;            /* Prevent wrapping */
+        }
+        
+        .service-card {
+          flex: 1 1 0;                 /* All cards grow equally */
+          height: 250px;               /* Same height for all cards */
+          max-width: 23%;              /* Fit 4 cards in a row */
+          background: #fff;
+          border-radius: 12px;
+          padding: 15px;
+          text-align: center;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+          display: flex;
+          flex-direction: column;      /* Stack icon, title, text, link vertically */
+          justify-content: space-between; /* Evenly space content inside card */
+          transition: transform 0.3s ease;
+        }
+        
+        .service-card:hover {
+          transform: translateY(-5px);
+        }
+        
+        .service-icon-wrapper {
+          font-size: 36px;
+          margin-bottom: 8px;
+        }
+        
+        .service-card h3 {
+          font-size: 18px;
+          margin-bottom: 6px;
+        }
+        
+        .service-card p {
+          font-size: 14px;
+          line-height: 1.4;
+          margin-bottom: 10px;
+        }
+        
+        .service-link {
+          font-size: 14px;
+          text-decoration: none;
+          color: var(--green);
+        }
+        </style>
+        
+</head>
+<body>
+    <header>
+        <div class="container nav-flex">
+            <div class="logo">
+                <a href="/">
+                    <img src="pay1.png" alt="PayAfrika Logo" style="height: 35px; margin-top: 10px;">
+                </a>
+            </div>
+            <nav class="desktop-nav">
+                <ul class="nav-links">
+                    <li><a href="#crypto-forex" class="nav-item">Crypto & Forex</a></li>
+                    <li><a href="#b2b-trade" class="nav-item">B2B</a></li>
+                    <li><a href="#loans" class="nav-item">Loans</a></li>
+                    <li><a href="#corporate-payments" class="nav-item">Import & Export</a></li>
+                    <li><a href="#queries" class="nav-item">Queries</a></li>
+                </ul>
+            </nav>
+            <div class="header-action" style="display: flex; align-items: center; gap: 15px;">
+                <a href="https://wa.link/d9ftyz" target="_blank" class="btn-chat-pill">
+                    24/7 Chat line
+                </a>
+                <a href="javascript:void(0)" class="admin-login-link" id="adminBtn" title="Admin Login">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: block; color: var(--navy);">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </header>
+<main>
+    <section class="hero">
+        <video autoplay muted loop playsinline class="hero-video">
+            <source src="payafrika.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="container">
+            <h1 class="hero-title fade-up">
+                Welcome to<br>
+                <span>PayAfrika</span>
+                <!-- <span style="color: var(--green);">PayAfrika</span> -->
+            </h1>
+            
+            <p class="hero-text fade-up delay-1">
+                We are your trusted microfinance partner specifically focused on
+                providing financial services to individuals and businesses in South Africa
+            </p>
+            
+            <div class="store-buttons fade-up delay-2">
+                <a href="#" class="store-btn" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play">
+                </a>
+                <a href="#" class="store-btn" target="_blank">
+                    <img 
+                      src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
+                      alt="Download on the App Store"
+                    >
+                </a>
+            </div>
+            
+        </div>
+    </section>
+    <section class="about-banner">
+        <div class="container">
+            <p class="about-text">
+                PayAfrika is a cross-border trade company and microfinance institution focused on enabling seamless 
+                business activities between South Africa and Nigeria. We provide structured, compliant solutions that 
+                support individuals, SMEs, and corporate clients engaged in legitimate trade, digital finance, and 
+                regulated business transactions. Through our integrated services, PayAfrika facilitates secure payments, 
+                trade financing, and transaction coordination—helping clients operate efficiently while adhering to 
+                regulatory and compliance standards.
+            </p>
+        </div>
+    </section>
+
+    <section id="services">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Core Services</h2>
+                <div class="header-line"></div>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon-wrapper">💳</div>
+                    <h3>Loan & Credit Solutions</h3>
+                    <p>Flexible personal and business loans strictly aligned with regulatory frameworks.</p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon-wrapper">🚢</div>
+                    <h3>B2B Trade Facilitation</h3>
+                    <p>Coordinating imports and exports to reduce friction in cross-border commerce.</p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon-wrapper">🏛️</div>
+                    <h3>Corporate Payments</h3>
+                    <p>Bridging liquidity gaps and managing settlement timelines for commercial deals.</p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon-wrapper">🌍</div>
+                    <h3>Digital Currency & Forex</h3>
+                    <p>Secure access to digital financial instruments and foreign exchange trading.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="calculator">
+        <div class="container calc-container">
+            <div class="calc-main">
+                <h2 class="calc-header">Loan Calculator</h2>
+                <p class="calc-subtext">Please enter loan amount between R1,000 and R500,000</p>
+                
+                <div class="input-group">
+                    <label>Amount</label>
+                    <div class="slider-wrapper">
+                        <input type="range" id="loanAmt" min="1000" max="500000" step="1000" value="50000" class="custom-slider">
+                    </div>
+                    <div class="display-box" id="amt-display">R50,000</div>
+                    <div class="range-labels"><span>R1,000</span><span>R500,000</span></div>
+                </div>
+    
+                <div class="input-group">
+                    <label>Payment Period</label>
+                    <div class="slider-wrapper">
+                        <input type="range" id="loanTerm" min="1" max="60" value="12" class="custom-slider">
+                    </div>
+                    <div class="display-box" id="term-display">12 months</div>
+                    <div class="range-labels"><span>1 month</span><span>5 years</span></div>
+                </div>
+    
+                <div class="result-group">
+                    <label>Your Monthly Repayment will be</label>
+                    <div class="result-box" id="monthlyResult">R4,917</div>
+                </div>
+            </div>
+    
+            <div class="calc-info">
+                <h2 class="info-title">Loan and Credit Solutions</h2>
+                <p>Flexible personal and business loans tailored to meet your unique financial needs.</p>
+                <p>PayAfrika offers structured loan and credit facilities to eligible individuals, SMEs, and businesses to support business expansion, working capital requirements, and trade-related financing.</p>
+                <p>All credit products are assessed, approved, and disbursed strictly in line with applicable regulatory, risk, and compliance frameworks, ensuring responsible lending and sustainable financial support.</p>
+                <a href="#contact" class="btn-apply">Apply for a Loan</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="b2b-trade">
+        <div class="container trade-container">
+            <div class="trade-info">
+                <h2 class="trade-title">B2B Facilitation, Import & Export</h2>
+                <p>PayAfrika enables and supports business-to-business trade between South Africa and Nigeria by facilitating purchases, supplier payments, and transaction coordination.</p>
+                <p>We assist businesses in navigating cross-border trade processes, helping to reduce friction, manage risk, and ensure smoother, more efficient execution of import and export transactions.</p>
+                <a href="#contact" class="btn-get-started">Get Started</a>
+            </div>
+            
+            <div class="trade-image">
+                <img src="pay2.png" alt="B2B Trade Professional">
+            </div>
+        </div>
+    </section>
+
+    <section id="corporate-payments" style="background-color: #f9fafb;">
+        <div class="container trade-container">
+            <div class="trade-image">
+                <img src="pay3.png" alt="Corporate Trade Payment Facilitation">
+            </div>
+    
+            <div class="trade-info">
+                <h2 class="trade-title">Corporate and Trade Payment Facilitation</h2>
+                <p>We provide structured trade-related and corporate payment solutions for businesses engaged in cross-border transactions.</p>
+                <p>Our services are designed to bridge liquidity gaps, manage settlement timelines, and support the successful completion of legitimate commercial deals.</p>
+                <p>Through efficient coordination and compliant payment structures, we help businesses execute transactions smoothly, reduce delays, and maintain continuity in international trade.</p>
+                <a href="#contact" class="btn-get-started">Get Started</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="crypto-forex" class="section-padding section-white">
+        <div class="container trade-container">
+            <div class="trade-image">
+                <img src="pay4.png" alt="Digital Currency and Forex Trading">
+            </div>
+    
+            <div class="trade-info">
+                <h2 class="trade-title">Digital Currency Exchange, Cryptocurrency & Forex Trading</h2>
+                <p>We provide structured and secure access to digital and alternative financial instruments, including cryptocurrency and foreign exchange trading. Our services are designed to support clients seeking efficient value exchange, hedging, and reliable settlement solutions within approved digital and forex frameworks.</p>
+                <p>PayAfrika enables seamless transactions through compliant processes, competitive rates, and fast execution—supporting both individual and business financial objectives.</p>
+                <a href="#contact" class="btn-get-started">Get Started</a>
+            </div>
+        </div>
+    </section>
+    
+    <section id="testimonials" class="section-padding section-white">
+        <div class="container">
+            <div class="section-header">
+                <h2 style="font-size: 2.8rem; font-weight: 800; color: #000; margin-bottom: 50px; text-align: center;">
+                    What people say about PayAfrika
+                </h2>
+            </div>
+            
+            <div class="testimonials-grid">
+                <div class="review-card">
+                    <div class="star-rating">★★★★★</div>
+                    <p class="review-text">"PayAfrika has been an exceptional business support structure for SASA Communication. We truly appreciate your professionalism and dedication. Thank you for being a reliable partner."</p>
+                    <div class="client-info">
+                        <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Mohammed Ahmed" class="client-avatar">
+                        <div class="client-details">
+                            <span class="client-name">Mohammed Ahmed</span>
+                            <span class="client-title">CEO, SASA Communication (Pty) Ltd</span>
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="review-card">
+                    <div class="star-rating">★★★★★</div>
+                    <p class="review-text">"PayAfrika has been an excellent Business-to-Business facilitator. I'm glad we placed our trust in you to manage our import services from South Africa to Nigeria - your efficiency and reliability have truly exceeded our expectations."</p>
+                    <div class="client-info">
+                        <!-- Black man -->
+                        <img src="https://images.unsplash.com/photo-1595152772835-219674b2a8a6?crop=faces&fit=crop&w=128&h=128" alt="Oyiwola Femi Clement" class="client-avatar">
+                        <div class="client-details">
+                            <span class="client-name">Oyiwola Femi Clement</span>
+                            <span class="client-title">CEO, Clemco Integrated Resources (Nigeria) Ltd</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="review-card">
+                    <div class="star-rating">★★★★★</div>
+                    <p class="review-text">"Fantastic services received. Negotiating and concluding business transactions in Nigeria has been seamless, thanks to your support. I truly appreciate your commitment to Pan-Africanism."</p>
+                    <div class="client-info">
+                        <!-- Black man -->
+                        <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?crop=faces&fit=crop&w=128&h=128" alt="Ujunwa M. Ukoh" class="client-avatar">
+                        <div class="client-details">
+                            <span class="client-name">Ujunwa M. Ukoh</span>
+                            <span class="client-title">Director, Horion Education (Pty) Ltd</span>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <section style="background: var(--bg-light);">
+        <div class="container" style="max-width: 800px;">
+            <h2 style="text-align:center; color: var(--navy); margin-bottom: 40px;">Frequently Asked Questions</h2>
+            <div class="faq-item">
+                <h4>How do the loans work?</h4>
+                <p>Our microfinance products are assessed and approved based on regulatory risk and compliance frameworks to ensure sustainable support.</p>
+            </div>
+            <div class="faq-item">
+                <h4>What is required to apply?</h4>
+                <p>Typically, we require valid identification, proof of residence, and business/income documentation for credit assessment.</p>
+            </div>
+            <div class="faq-item">
+                <h4>How do you support cross-border trade?</h4>
+                <p>We facilitate supplier payments and coordinate logistics coordination to bridge the gap between South African and Nigerian markets.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="container">
+            <div class="contact-form">
+                <h2>Get Started Today</h2>
+                <form id="mvpForm">
+                    <div class="form-group"><input type="text" placeholder="Full Name" required></div>
+                    <div class="form-group"><input type="email" placeholder="Email Address" required></div>
+                    <div class="form-group"><input type="tel" placeholder="Phone Number" required></div>
+                    <button type="submit" class="btn-primary" style="width: 100%; background: var(--green); color: var(--navy);">Submit Application</button>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+<div id="authModal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="close-modal" id="closeModal">&times;</span>
+        
+        <div class="auth-tabs">
+            <button class="tab-btn active" onclick="toggleAuth('login')">Sign In</button>
+            <button class="tab-btn" onclick="toggleAuth('register')">Register</button>
+        </div>
+
+        <form id="loginForm" class="auth-form">
+            <h3>Welcome Back</h3>
+            <div class="form-group"><input type="email" placeholder="Email Address" required></div>
+            <div class="form-group"><input type="password" placeholder="Password" required></div>
+            <button type="submit" class="btn-primary" style="width: 100%; background: var(--green); color: var(--navy);">Login</button>
+        </form>
+
+        <form id="registerForm" class="auth-form" style="display: none;">
+            <h3>Create Account</h3>
+            <div class="form-group"><input type="text" placeholder="Full Name" required></div>
+            <div class="form-group"><input type="email" placeholder="Email Address" required></div>
+            <div class="form-group"><input type="password" placeholder="Create Password" required></div>
+            <button type="submit" class="btn-primary" style="width: 100%; background: var(--green); color: var(--navy);">Register</button>
+        </form>
+    </div>
+</div>
+<footer>
+    <div class="container">
+        <div class="footer-grid">
+            <div>
+                <img src="./assets/logo.png" alt="PayAfrika" style="height: 30px; margin-bottom: 20px;">
+                <p>From Cross-Border Commerce to Crypto – PayAfrika Powers It All.</p>
+            </div>
+            <div class="footer-links">
+                <strong>Legal</strong>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Use</a>
+            </div>
+            <div class="footer-links">
+                <strong>Contact</strong>
+                <p>info@payafrika.co.za</p>
+                <p>+27 87 223 5310</p>
+            </div>
+        </div>
+        <div style="text-align: center; border-top: 1px solid #eee; padding-top: 20px; color: var(--text-light);">
+            &copy; 2026 PayAfrika (Pty) Ltd. Authorised Credit Provider.
+        </div>
+    </div>
+</footer>
+
+<script>
+   const amtInput = document.getElementById('loanAmt');
+const termInput = document.getElementById('loanTerm');
+const amtDisplay = document.getElementById('amt-display');
+const termDisplay = document.getElementById('term-display');
+const resultDisplay = document.getElementById('monthlyResult');
+
+function calculate() {
+    const principal = parseFloat(amtInput.value);
+    const months = parseInt(termInput.value);
+    
+    // Update labels
+    amtDisplay.innerText = "R" + principal.toLocaleString();
+    termDisplay.innerText = months + (months === 1 ? " month" : " months");
+    
+    // Calculation (using roughly the 10% total interest logic from before)
+    // Matches the R4,917 in your screenshot for R50k @ 12mo
+    const monthly = (principal * 1.18) / months; 
+    resultDisplay.innerText = "R" + Math.round(monthly).toLocaleString();
+}
+
+amtInput.oninput = calculate;
+termInput.oninput = calculate;
+// Run once on load
+calculate();
+    
+
+const modal = document.getElementById("authModal");
+const btn = document.getElementById("adminBtn");
+const closeSpan = document.getElementById("closeModal");
+
+// Open Modal
+btn.onclick = () => modal.style.display = "block";
+
+// Close Modal
+closeSpan.onclick = () => modal.style.display = "none";
+
+// Close if user clicks outside the box
+window.onclick = (event) => {
+    if (event.target == modal) modal.style.display = "none";
+}
+
+// Switch between Login and Register
+function toggleAuth(type) {
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const tabs = document.querySelectorAll('.tab-btn');
+
+    if (type === 'login') {
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+        tabs[0].classList.add('active');
+        tabs[1].classList.remove('active');
+    } else {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+        tabs[0].classList.remove('active');
+        tabs[1].classList.add('active');
+    }
+}
+// Handle Login Redirection
+const loginForm = document.getElementById('loginForm');
+
+loginForm.onsubmit = function(e) {
+    e.preventDefault(); // Prevents the page from refreshing
+    
+    // In a real app, you'd validate credentials here.
+    // For now, we simply redirect:
+    window.location.href = "dashboard.html";
+};
+</script>
+
+</body>
+</html>
