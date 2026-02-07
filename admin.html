@@ -78,156 +78,157 @@
         const supabaseUrl = 'https://wnajtvhshsfnzgrtcwub.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InduYWp0dmhzaHNmbnpncnRjd3ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxMTM2NTUsImV4cCI6MjA4NTY4OTY1NX0.yGzxLL6oRg2SCs6g7UUdIMb7wmFPGFPC3IVDk5Da-HU'; 
         const supa = supabase.createClient(supabaseUrl, supabaseKey);
-
-        // --- 1. LOGIN HANDLING ---
-        // --- 1. UPDATED LOGIN HANDLING ---
-async function handleAdminLogin() {
-    const email = document.getElementById('adminEmail').value;
-    const password = document.getElementById('adminPass').value;
-
-    // Hardcoded credentials for internal access
-    const ADMIN_USER = "admin@payafrika.com";
-    const ADMIN_PASS = "1234";
-
-    if (email === ADMIN_USER && password === ADMIN_PASS) {
-        // Bypass Supabase auth and show the panel directly
-        bypassToAdmin();
-    } else {
-        // Fallback to normal Supabase login if you still want that option
-        const { data, error } = await supa.auth.signInWithPassword({ email, password });
-        if (error) {
-            alert("Login Failed: Incorrect credentials.");
-            return;
-        }
-        checkAdminAccess(data.user);
-    }
-}
-
-// Helper function to bypass checks
-function bypassToAdmin() {
-    document.getElementById('adminLoginOverlay').style.display = 'none';
-    document.getElementById('adminContent').style.display = 'block';
-    loadPending();
-}
-
-        // --- 2. AUTH & ROLE CHECK ---
-        async function checkAdminAccess(user) {
-    if (!user) {
-        const { data: { session } } = await supa.auth.getSession();
-        user = session ? session.user : null;
-    }
     
-    if (!user) return; // Still on login screen
-
-    // REMOVED .single() to avoid the coercion error
-    const { data: profiles, error } = await supa
-        .from('profiles')
-        .select('is_admin')
-        .eq('id', user.id);
-
-    if (error) {
-        console.error("Database Error:", error);
-        return;
-    }
-
-    // Check if profile exists AND if they are admin
-    if (!profiles || profiles.length === 0 || !profiles[0].is_admin) {
-        // alert("Access Denied: You are not marked as an Admin.");
-        await supa.auth.signOut();
-        location.reload();
-        return;
-    }
-
-    // Success
-    document.getElementById('adminLoginOverlay').style.display = 'none';
-    document.getElementById('adminContent').style.display = 'block';
-    loadPending();
-}
-        // --- 3. DATA LOADING ---
-        async function loadPending() {
-    const tbody = document.getElementById('txBody');
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Fetching data...</td></tr>';
-
-    const { data: txs, error: txErr } = await supa
-        .from('transactions')
-        .select('*')
-        .eq('status', 'pending');
-
-    if (txErr) {
-        console.error("TX Error:", txErr.message);
-        tbody.innerHTML = `<tr><td colspan="6" style="color:red;">Error: ${txErr.message}</td></tr>`;
-        return;
-    }
-
-    if (!txs || txs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No pending deposits found.</td></tr>';
-        return;
-    }
-
-    tbody.innerHTML = ''; 
-
-    for (const tx of txs) {
-        // Fetch BOTH first_name and pocket_balance
-        const { data: profile, error: profileErr } = await supa
-    .from('profiles')
-    .select('*') // Select all for a moment to see what's available
-    .eq('id', tx.user_id)
-    .maybeSingle();
-
-    if (profileErr) console.error("Error fetching profile:", profileErr);
-
-// Fallback logic
-const userBalance = profile?.pocket_balance || 0;
-const firstName = profile?.first_name || "Name Missing";
-        
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${new Date(tx.created_at).toLocaleDateString()}</td>
-            <td><strong>${firstName}</strong><br><small style="color: #64748b;">${tx.user_id.substring(0,8)}</small></td>
-            <td><strong>${tx.method || 'N/A'}</strong></td>
-            <td style="color: #059669; font-weight: bold;">R${parseFloat(tx.amount).toFixed(2)}</td>
-            <td><span class="badge">${tx.status}</span></td>
-            <td>
-                <button class="approve-btn" onclick="approve('${tx.id}', '${tx.user_id}', ${tx.amount}, ${userBalance})">Approve</button>
-                <button class="reject-btn" onclick="reject('${tx.id}')">Reject</button>
-            </td>
-        `;
-        tbody.appendChild(row);
-    }
-}
-        // --- 4. ACTIONS ---
-        async function approve(txId, userId, amount, currentBalance) {
-            if(!confirm("Approve funds?")) return;
-            const { error: txErr } = await supa.from('transactions').update({ status: 'completed' }).eq('id', txId);
-            if (txErr) return alert(txErr.message);
-
-            const newTotal = parseFloat(currentBalance) + parseFloat(amount);
-            await supa.from('profiles').update({ pocket_balance: newTotal }).eq('id', userId);
-            
-            showMsg("Approved!", "emerald");
+        // --- 1. LOGIN HANDLING ---
+        async function handleAdminLogin() {
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPass').value;
+            const ADMIN_USER = "admin@payafrika.com";
+            const ADMIN_PASS = "1234";
+    
+            if (email === ADMIN_USER && password === ADMIN_PASS) {
+                bypassToAdmin();
+            } else {
+                const { data, error } = await supa.auth.signInWithPassword({ email, password });
+                if (error) { alert("Login Failed: Incorrect credentials."); return; }
+                checkAdminAccess(data.user);
+            }
+        }
+    
+        function bypassToAdmin() {
+            document.getElementById('adminLoginOverlay').style.display = 'none';
+            document.getElementById('adminContent').style.display = 'block';
             loadPending();
         }
-
+    
+        // --- 2. AUTH & ROLE CHECK ---
+        async function checkAdminAccess(user) {
+            if (!user) {
+                const { data: { session } } = await supa.auth.getSession();
+                user = session ? session.user : null;
+            }
+            if (!user) return;
+    
+            const { data: profiles, error } = await supa
+                .from('profiles')
+                .select('is_admin')
+                .eq('id', user.id);
+    
+            if (error || !profiles || profiles.length === 0 || !profiles[0].is_admin) {
+                await supa.auth.signOut();
+                location.reload();
+                return;
+            }
+            bypassToAdmin();
+        }
+    
+        // --- 3. DATA LOADING (WITH BALANCE DETECTION) ---
+        async function loadPending() {
+            const tbody = document.getElementById('txBody');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Fetching data...</td></tr>';
+    
+            const { data: txs, error: txErr } = await supa
+                .from('transactions')
+                .select('*')
+                .eq('status', 'pending');
+    
+            if (txErr) {
+                tbody.innerHTML = `<tr><td colspan="6" style="color:red;">Error: ${txErr.message}</td></tr>`;
+                return;
+            }
+    
+            if (!txs || txs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No pending transactions.</td></tr>';
+                return;
+            }
+    
+            tbody.innerHTML = ''; 
+    
+            for (const tx of txs) {
+                const { data: profile } = await supa.from('profiles').select('*').eq('id', tx.user_id).maybeSingle();
+    
+                // Detect which balance to pass based on where the money is going/coming from
+                const userPocket = profile?.pocket_balance || 0;
+                const userWallet = profile?.wallet_balance || 0;
+                const currentBalanceToPass = (tx.target_account === 'wallet') ? userWallet : userPocket;
+                
+                const firstName = profile?.first_name || "User";
+                const isOutflow = tx.type === 'withdrawal' || tx.type === 'trade';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${new Date(tx.created_at).toLocaleDateString()}</td>
+                    <td><strong>${firstName}</strong><br><small style="color: #64748b;">${tx.type.toUpperCase()}</small></td>
+                    <td><strong>${tx.method || 'N/A'}</strong></td>
+                    <td style="color: ${isOutflow ? '#ef4444' : '#059669'}; font-weight: bold;">
+                        ${isOutflow ? '-' : '+'} R${parseFloat(tx.amount).toFixed(2)}
+                        ${tx.fee > 0 ? `<br><small style="color:#64748b;">Fee: R${parseFloat(tx.fee).toFixed(2)}</small>` : ''}
+                    </td>
+                    <td><span class="badge">${tx.status}</span></td>
+                    <td>
+                        <button class="approve-btn" onclick="approve('${tx.id}', '${tx.user_id}', ${currentBalanceToPass})">Approve</button>
+                        <button class="reject-btn" onclick="reject('${tx.id}')">Reject</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            }
+        }
+    
+        // --- 4. UPDATED ACTIONS (SUBTRACTION LOGIC) ---
+        async function approve(txId, userId, currentBalance) {
+            if(!confirm("Approve this transaction? Balance will be updated accordingly.")) return;
+    
+            // 1. Get the latest transaction data to be 100% sure of type and fee
+            const { data: tx, error: fetchErr } = await supa.from('transactions').select('*').eq('id', txId).single();
+            if (fetchErr) return alert(fetchErr.message);
+    
+            const amount = parseFloat(tx.amount);
+            const fee = parseFloat(tx.fee || 0);
+            let newTotal;
+    
+            // 2. Perform math based on transaction type
+            if (tx.type === 'deposit') {
+                newTotal = parseFloat(currentBalance) + amount;
+            } else {
+                // Withdrawal or Trade: Subtract (Amount + Fee)
+                newTotal = parseFloat(currentBalance) - (amount + fee);
+            }
+    
+            // 3. Update transaction status
+            const { error: txUpdateErr } = await supa.from('transactions').update({ status: 'completed' }).eq('id', txId);
+            if (txUpdateErr) return alert(txUpdateErr.message);
+    
+            // 4. Update correct profile balance
+            const balanceField = (tx.target_account === 'wallet') ? 'wallet_balance' : 'pocket_balance';
+            const updateData = {};
+            updateData[balanceField] = newTotal;
+    
+            const { error: profileErr } = await supa.from('profiles').update(updateData).eq('id', userId);
+            
+            if (profileErr) {
+                alert("Status updated, but balance failed: " + profileErr.message);
+            } else {
+                showMsg("Approved & Balance Updated!", "emerald");
+            }
+            loadPending();
+        }
+    
         async function reject(txId) {
-            if(!confirm("Reject funds?")) return;
+            if(!confirm("Reject this transaction?")) return;
             await supa.from('transactions').update({ status: 'failed' }).eq('id', txId);
             showMsg("Rejected", "slate");
             loadPending();
         }
-
+    
         function showMsg(text, color) {
             const m = document.getElementById('statusMsg');
             m.textContent = text; m.style.display = 'block';
             m.style.background = color === 'emerald' ? '#d1fae5' : '#f1f5f9';
             setTimeout(() => m.style.display = 'none', 2000);
         }
-
-        async function handleLogout() {
-            await supa.auth.signOut();
-            location.reload();
-        }
-
-        // Check if already logged in on page load
+    
+        async function handleLogout() { await supa.auth.signOut(); location.reload(); }
+    
         window.onload = () => checkAdminAccess();
     </script>
 </body>

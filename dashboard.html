@@ -51,29 +51,90 @@
     <div id="withdrawModal" class="modal">
         <div class="modal-content">
             <h3>Withdraw Funds</h3>
-            <p>Transfer money from your <span id="withdrawSourceText">account</span> to your bank.</p>
+            <p>Transfer from your <span id="withdrawSourceText">account</span>.</p>
             
             <input type="hidden" id="withdrawSource" value="wallet">
     
             <div style="text-align: left; margin-bottom: 15px;">
-                <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Bank Name</label>
-                <input type="text" id="withdrawBank" class="modal-input" placeholder="e.g. Standard Bank" style="margin-top: 5px;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Withdrawal Method</label>
+                <select id="withdrawMethod" class="modal-input" style="margin-top: 5px;" onchange="toggleWithdrawFields()">
+                    <option value="EFT">Bank EFT (Electronic Transfer)</option>
+                    <option value="CASH">Cash Pickup / ATM Send</option>
+                </select>
             </div>
     
-            <div style="text-align: left; margin-bottom: 15px;">
-                <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Account Number</label>
-                <input type="number" id="withdrawAccount" class="modal-input" placeholder="Account Number" style="margin-top: 5px;">
+            <div id="eftFields">
+                <div style="text-align: left; margin-bottom: 15px;">
+                    <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Bank Details</label>
+                    <input type="text" id="withdrawBank" class="modal-input" placeholder="Bank Name & Acc Number" style="margin-top: 5px;">
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                    <input type="checkbox" id="immediatePayment" onchange="calculateWithdrawTotal()">
+                    <label for="immediatePayment" style="font-size: 0.85rem; color: #1e293b;">Immediate Payment (2% fee)</label>
+                </div>
             </div>
     
-            <div style="text-align: left; margin-bottom: 15px;">
-                <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Amount to Withdraw</label>
-                <input type="number" id="withdrawAmount" class="modal-input" placeholder="0.00" style="margin-top: 5px;">
+            <div id="cashFields" style="display: none;">
+                <div style="background: #fff7ed; border: 1px solid #ffedd5; color: #9a3412; padding: 10px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 15px;">
+                    <strong>Cash Fee:</strong> A 5% handling charge applies to all cash withdrawals.
+                </div>
+            </div>
+    
+            <div style="text-align: left; margin-bottom: 10px;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Amount to Withdraw (ZAR)</label>
+                <input type="number" id="withdrawAmount" class="modal-input" placeholder="0.00" oninput="calculateWithdrawTotal()" style="margin-top: 5px;">
+            </div>
+    
+            <div style="background: #f1f5f9; padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                    <span>Withdrawal Fee:</span>
+                    <span id="feeDisplay">R0.00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-weight: 700; color: #1e293b; border-top: 1px solid #cbd5e1; pt: 4px; margin-top: 4px;">
+                    <span>Total Deduction:</span>
+                    <span id="withdrawTotalDisplay">R0.00</span>
+                </div>
             </div>
     
             <button id="withdrawSubmitBtn" class="confirm-btn" onclick="processWithdrawal()" style="background-color: #ef4444;">Confirm Withdrawal</button>
             <p><a href="#" onclick="closeModal()" style="color: #64748b; font-size: 0.9rem; text-decoration: none;">Cancel</a></p>
         </div>
     </div>
+
+    <div id="tradeModal" class="modal">
+        <div class="modal-content">
+            <h3>International Transfer</h3>
+            <p>Convert ZAR from your Pocket to NGN.</p>
+    
+            <div id="rateBanner" style="background: #eff6ff; border: 1px solid #dbeafe; color: #1e40af; padding: 12px; border-radius: 12px; margin-bottom: 20px; font-size: 0.9rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span><strong>Current Rate</strong></span>
+                    <span id="currentRateDisplay" style="font-weight: 700;">1 ZAR = 80.45 NGN</span>
+                </div>
+            </div>
+            
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Recipient NGN Wallet ID / Email</label>
+                <input type="text" id="tradeRecipient" class="modal-input" placeholder="e.g. user@payafrika.ng" style="margin-top: 5px;">
+            </div>
+    
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <div style="flex: 1; text-align: left;">
+                    <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">You Send (ZAR)</label>
+                    <input type="number" id="tradeAmount" class="modal-input" placeholder="0.00" oninput="calculateExchange()" style="margin-top: 5px;">
+                </div>
+                <div style="flex: 1; text-align: left;">
+                    <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Recipient Gets (NGN)</label>
+                    <div id="exchangeResult" style="height: 45px; display: flex; align-items: center; font-weight: 700; font-size: 1.1rem; color: var(--primary-emerald); margin-top: 5px;">₦ 0.00</div>
+                    <input type="hidden" id="targetCurrency" value="NGN">
+                </div>
+            </div>
+    
+            <button id="tradeSubmitBtn" class="confirm-btn" onclick="processTrade()" style="background-color: var(--primary-emerald);">Confirm & Send Naira</button>
+            <p><a href="#" onclick="closeModal()" style="color: #64748b; font-size: 0.9rem; text-decoration: none;">Cancel</a></p>
+        </div>
+    </div>
+
     <div class="main-container">
         <div id="loading">
             <p>Syncing your accounts...</p>
@@ -105,8 +166,7 @@
                 <div class="action-grid">
                     <button class="action-btn" onclick="openModal('deposit', 'pocket')">📥 Deposit</button>
                     <button class="action-btn" onclick="openModal('withdraw', 'pocket')">📤 Withdrawal</button>
-                    <button class="action-btn">📈 Trade</button>
-                </div>
+                    <button class="action-btn" onclick="openModal('trade')">📈 Trade</button>                </div>
             </div>
 
             <div id="loan" class="tab-content">

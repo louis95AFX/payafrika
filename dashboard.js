@@ -1,41 +1,21 @@
+// --- CONFIGURATION & INITIALIZATION ---
 const supabaseUrl = 'https://wnajtvhshsfnzgrtcwub.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InduYWp0dmhzaHNmbnpncnRjd3ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxMTM2NTUsImV4cCI6MjA4NTY4OTY1NX0.yGzxLL6oRg2SCs6g7UUdIMb7wmFPGFPC3IVDk5Da-HU';
 const supa = supabase.createClient(supabaseUrl, supabaseKey);
 
 let currentUser = null;
 let currentPocketBalance = 0;
+let currentWalletBalance = 0;
 
-// UI Logic
-function openTab(evt, tabName) {
-    // 1. Handle Tab Switching
-    let contents = document.getElementsByClassName("tab-content");
-    for (let i = 0; i < contents.length; i++) {
-        contents[i].classList.remove("active");
-    }
-    
-    let buttons = document.getElementsByClassName("tab-btn");
-    for (let i = 0; i < buttons.length; i++) {
-        buttons[i].classList.remove("active");
-    }
-    
-    document.getElementById(tabName).classList.add("active");
-    evt.currentTarget.classList.add("active");
+// Configurable Rates
+const EXCHANGE_RATE_NGN = 80.45; // 1 ZAR = 80.45 NGN
+const FEE_RATES = {
+    CASH: 0.05,          // 5% for Cash
+    IMMEDIATE_EFT: 0.02, // 2% for Immediate EFT
+    STANDARD_EFT: 0.00   // 0% for Standard
+};
 
-    // 2. Toggle History Visibility
-    const historySection = document.querySelector('.history-section');
-    if (tabName === 'loan') {
-        historySection.style.display = 'none';
-    } else {
-        historySection.style.display = 'block';
-        // Refresh history when switching back to wallet/pocket
-        fetchTransactionHistory(); 
-    }
-}
-
-function openModal() { document.getElementById('depositModal').style.display = 'block'; }
-function closeModal() { document.getElementById('depositModal').style.display = 'none'; }
-
-// Data Logic
+// --- AUTH & DATA FETCHING ---
 async function checkUser() {
     const { data: { session } } = await supa.auth.getSession();
     if (!session) { window.location.href = 'index.html'; return; }
@@ -48,42 +28,50 @@ async function checkUser() {
     document.getElementById('loading').style.display = 'none';
     document.getElementById('navbar').style.display = 'flex';
     document.getElementById('dashboardUI').style.display = 'block';
+    fetchTransactionHistory();
 }
 
 async function fetchBalances() {
-const { data, error } = await supa
-.from('profiles')
-.select('pocket_balance, wallet_balance')
-.eq('id', currentUser.id)
-.maybeSingle();
+    const { data, error } = await supa
+        .from('profiles')
+        .select('pocket_balance, wallet_balance')
+        .eq('id', currentUser.id)
+        .maybeSingle();
 
-if (error) {
-console.error("Error fetching balances:", error);
-return;
+    if (error) { console.error("Error fetching balances:", error); return; }
+
+    if (data) {
+        currentWalletBalance = data.wallet_balance || 0;
+        currentPocketBalance = data.pocket_balance || 0;
+        
+        document.getElementById('walletBalanceDisplay').textContent = currentWalletBalance.toFixed(2);
+        document.getElementById('pocketBalanceDisplay').textContent = currentPocketBalance.toFixed(2);
+    } else {
+        await supa.from('profiles').upsert({ id: currentUser.id, pocket_balance: 0, wallet_balance: 0 });
+    }
 }
 
-if (data) {
-// Update Wallet UI
-const walletBal = data.wallet_balance || 0;
-document.getElementById('walletBalanceDisplay').textContent = walletBal.toFixed(2);
+// --- UI & MODAL CONTROL ---
+function openTab(evt, tabName) {
+    let contents = document.getElementsByClassName("tab-content");
+    for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
+    
+    let buttons = document.getElementsByClassName("tab-btn");
+    for (let i = 0; i < buttons.length; i++) buttons[i].classList.remove("active");
+    
+    document.getElementById(tabName).classList.add("active");
+    evt.currentTarget.classList.add("active");
 
-// Update Pocket UI
-const pocketBal = data.pocket_balance || 0;
-document.getElementById('pocketBalanceDisplay').textContent = pocketBal.toFixed(2);
-
-// Update local variable if you use it elsewhere
-currentPocketBalance = pocketBal; 
-} else {
-// Create an initial profile record for new users if none exists
-await supa.from('profiles').upsert({ 
-    id: currentUser.id, 
-    pocket_balance: 0, 
-    wallet_balance: 0 
-});
+    const historySection = document.querySelector('.history-section');
+    if (tabName === 'loan') {
+        historySection.style.display = 'none';
+    } else {
+        historySection.style.display = 'block';
+        fetchTransactionHistory(); 
+    }
 }
-}
 
-function openModal(type, target) {
+function openModal(type, target = 'wallet') {
     if (type === 'deposit') {
         document.getElementById('depositTarget').value = target;
         document.getElementById('modalTitle').textContent = `Deposit to ${target.charAt(0).toUpperCase() + target.slice(1)}`;
@@ -93,341 +81,182 @@ function openModal(type, target) {
         document.getElementById('withdrawSource').value = target;
         document.getElementById('withdrawSourceText').textContent = target.charAt(0).toUpperCase() + target.slice(1);
         document.getElementById('withdrawModal').style.display = 'block';
+        toggleWithdrawFields(); // Initialize view
+    } else if (type === 'trade') {
+        document.getElementById('tradeModal').style.display = 'block';
+        calculateExchange();
     }
 }
 
 function closeModal() {
-    document.getElementById('depositModal').style.display = 'none';
-    document.getElementById('withdrawModal').style.display = 'none';
+    const modals = ['depositModal', 'withdrawModal', 'tradeModal'];
+    modals.forEach(id => {
+        const modal = document.getElementById(id);
+        if(modal) modal.style.display = 'none';
+    });
 }
 
+// --- DEPOSIT LOGIC ---
+function updateBankDetails() {
+    const method = document.getElementById('depositMethod').value;
+    const target = document.getElementById('depositTarget').value;
+    const detailsDiv = document.getElementById('bankDetailsContent');
+    
+    const prefix = target === 'wallet' ? 'PW' : 'PS';
+    const shortId = currentUser.id.substring(0, 4).toUpperCase();
+    const ref = `${prefix}-${shortId}INV${new Date().getTime().toString().slice(-6)}`;
 
+    const details = {
+        "EFT": { bank: "First National Bank", accNum: "62839405961" },
+        "ATM": { bank: "Standard Bank", accNum: "1014958372" },
+        "OTC": { bank: "Absa Bank", accNum: "409283746" }
+    };
+
+    const info = details[method];
+    detailsDiv.innerHTML = `
+        <strong>Bank:</strong> ${info.bank}<br>
+        <strong>Acc Number:</strong> ${info.accNum}<br>
+        <strong>Reference:</strong> <span style="color: #ef4444; font-weight: 700;">${ref}</span>
+    `;
+    return ref;
+}
 
 async function processDeposit() {
-const amount = parseFloat(document.getElementById('depositAmount').value);
-const method = document.getElementById('depositMethod').value;
-const targetAccount = document.getElementById('depositTarget').value; // 'wallet' or 'pocket'
-const btn = document.getElementById('depositSubmitBtn');
+    const amount = parseFloat(document.getElementById('depositAmount').value);
+    const method = document.getElementById('depositMethod').value;
+    const targetAccount = document.getElementById('depositTarget').value; 
+    const reference = updateBankDetails(); 
+    const btn = document.getElementById('depositSubmitBtn');
 
-if (isNaN(amount) || amount <= 0) {
-    alert("Please enter a valid amount.");
-    return;
-}
+    if (!amount || amount <= 0) { alert("Enter a valid amount."); return; }
 
-btn.disabled = true;
-btn.textContent = "Submitting...";
-
-try {
-    // Create Transaction with target_account column
-    const { error: txError } = await supa
-        .from('transactions')
-        .insert([{ 
-            user_id: currentUser.id, 
-            amount: amount, 
-            method: method, 
-            type: 'deposit',
-            target_account: targetAccount, // New field to tell admin where to credit
-            // status: 'pending'
+    btn.disabled = true;
+    try {
+        const { error } = await supa.from('transactions').insert([{ 
+            user_id: currentUser.id, amount, method, type: 'deposit',
+            target_account: targetAccount, reference, status: 'pending'
         }]);
+        if (error) throw error;
+        alert("Deposit submitted. Funds will reflect after verification.");
+        closeModal();
+    } catch (e) { alert(e.message); } finally { btn.disabled = false; }
+}
 
-    if (txError) throw txError;
+// --- WITHDRAWAL LOGIC (PERCENTAGE FEES) ---
+function toggleWithdrawFields() {
+    const method = document.getElementById('withdrawMethod').value;
+    document.getElementById('eftFields').style.display = (method === 'EFT') ? 'block' : 'none';
+    document.getElementById('cashFields').style.display = (method === 'CASH') ? 'block' : 'none';
+    calculateWithdrawTotal();
+}
 
-    alert(`Deposit request for $${amount.toFixed(2)} to your ${targetAccount} submitted via ${method}. Funds will reflect once verified.`);
-    closeModal();
-    document.getElementById('depositAmount').value = '';
+function calculateWithdrawTotal() {
+    const amount = parseFloat(document.getElementById('withdrawAmount').value) || 0;
+    const method = document.getElementById('withdrawMethod').value;
+    const isImmediate = document.getElementById('immediatePayment').checked;
     
-} catch (error) {
-    alert("Submission failed: " + error.message);
-} finally {
-    btn.disabled = false;
-    btn.textContent = "Confirm Deposit";
-}
-}
+    let rate = 0;
+    if (method === 'CASH') rate = FEE_RATES.CASH;
+    else if (method === 'EFT' && isImmediate) rate = FEE_RATES.IMMEDIATE_EFT;
 
-async function handleLogout() {
-    await supa.auth.signOut();
-    window.location.href = 'index.html';
-}
+    const fee = amount * rate;
+    const total = amount + fee;
 
-window.onload = checkUser;
-
-// 1. Define your bank details here
-const bankDetails = {
-"EFT": `<strong>Bank:</strong> First National Bank<br>
-    <strong>Acc Name:</strong> PayAfrika Pty Ltd<br>
-    <strong>Acc Number:</strong> 62839405961<br>
-    <strong>Branch Code:</strong> 250655<br>
-    <strong>Ref:</strong> [Your Name/Email]`,
+    document.getElementById('feeDisplay').textContent = `R${fee.toFixed(2)}`;
+    document.getElementById('withdrawTotalDisplay').textContent = `R${total.toFixed(2)}`;
     
-"ATM": `<strong>Bank:</strong> Standard Bank<br>
-    <strong>Acc Number:</strong> 1014958372<br>
-    <strong>ATM Ref:</strong> Use your Phone Number`,
-    
-"OTC": `<strong>Bank:</strong> Absa Bank<br>
-    <strong>Acc Name:</strong> PayAfrika Deposits<br>
-    <strong>Acc Number:</strong> 409283746<br>
-    <strong>Note:</strong> Keep your deposit slip!`
-};
-
-// 2. Function to update the UI when method changes
-function updateBankDetails() {
-const method = document.getElementById('depositMethod').value;
-const detailsDiv = document.getElementById('bankDetailsContent');
-
-// Inject the HTML based on the selection
-detailsDiv.innerHTML = bankDetails[method] || "Select a method to see details";
-}
-
-// 3. Update your existing openModal to trigger the initial display
-function openModal(type, target) {
-    if (type === 'deposit') {
-        document.getElementById('depositTarget').value = target;
-        document.getElementById('modalTitle').textContent = `Deposit to ${target.charAt(0).toUpperCase() + target.slice(1)}`;
-        document.getElementById('depositModal').style.display = 'block';
-        updateBankDetails();
-    } else if (type === 'withdraw') {
-        document.getElementById('withdrawSource').value = target;
-        document.getElementById('withdrawSourceText').textContent = target.charAt(0).toUpperCase() + target.slice(1);
-        document.getElementById('withdrawModal').style.display = 'block';
-    }
-}
-
-function closeModal() {
-    document.getElementById('depositModal').style.display = 'none';
-    document.getElementById('withdrawModal').style.display = 'none';
-
-    // Initialize details when modal opens
-updateBankDetails();
-}
-
-
-
-
-// Helper to generate the dynamic reference
-function generateReference(target) {
-if (!currentUser) return "N/A";
-
-const prefix = target === 'wallet' ? 'PW' : 'PS';
-const shortId = currentUser.id.substring(0, 4).toUpperCase();
-
-// Format date: dd/mm/yy
-const now = new Date();
-const dd = String(now.getDate()).padStart(2, '0');
-const mm = String(now.getMonth() + 1).padStart(2, '0');
-const yy = String(now.getFullYear()).slice(-2);
-const dateStr = `${dd}${mm}${yy}`;
-
-return `${prefix}-${shortId}INV${dateStr}`;
-}
-
-// Updated bank details mapping (using a function to inject the ref)
-function getBankDetailsHTML(method, reference) {
-const details = {
-"EFT": {
-    bank: "First National Bank",
-    accName: "PayAfrika Pty Ltd",
-    accNum: "62839405961",
-    branch: "250655"
-},
-"ATM": {
-    bank: "Standard Bank",
-    accName: "PayAfrika Pty Ltd",
-    accNum: "1014958372",
-    branch: "0001"
-},
-"OTC": {
-    bank: "Absa Bank",
-    accName: "PayAfrika Deposits",
-    accNum: "409283746",
-    branch: "632005"
-}
-};
-
-const info = details[method];
-return `
-<strong>Bank:</strong> ${info.bank}<br>
-<strong>Acc Name:</strong> ${info.accName}<br>
-<strong>Acc Number:</strong> ${info.accNum}<br>
-<strong>Reference:</strong> <span style="color: #ef4444; font-weight: 700;">${reference}</span>
-`;
-}
-
-// Updated UI trigger
-function updateBankDetails() {
-const method = document.getElementById('depositMethod').value;
-const target = document.getElementById('depositTarget').value;
-const detailsDiv = document.getElementById('bankDetailsContent');
-
-const ref = generateReference(target);
-detailsDiv.innerHTML = getBankDetailsHTML(method, ref);
-}
-
-// Updated openModal
-function openModal(type, target) {
-    if (type === 'deposit') {
-        document.getElementById('depositTarget').value = target;
-        document.getElementById('modalTitle').textContent = `Deposit to ${target.charAt(0).toUpperCase() + target.slice(1)}`;
-        document.getElementById('depositModal').style.display = 'block';
-        updateBankDetails();
-    } else if (type === 'withdraw') {
-        document.getElementById('withdrawSource').value = target;
-        document.getElementById('withdrawSourceText').textContent = target.charAt(0).toUpperCase() + target.slice(1);
-        document.getElementById('withdrawModal').style.display = 'block';
-    }
-}
-
-function closeModal() {
-    document.getElementById('depositModal').style.display = 'none';
-    document.getElementById('withdrawModal').style.display = 'none';
-    updateBankDetails();
-
-}
-
-
-// Updated Process Deposit (to save the reference to Supabase)
-async function processDeposit() {
-const amount = parseFloat(document.getElementById('depositAmount').value);
-const method = document.getElementById('depositMethod').value;
-const targetAccount = document.getElementById('depositTarget').value;
-const reference = generateReference(targetAccount); // Generate the same ref for DB
-const btn = document.getElementById('depositSubmitBtn');
-
-if (isNaN(amount) || amount <= 0) {
-alert("Please enter a valid amount.");
-return;
-}
-
-btn.disabled = true;
-btn.textContent = "Submitting...";
-
-try {
-const { error: txError } = await supa
-    .from('transactions')
-    .insert([{ 
-        user_id: currentUser.id, 
-        amount: amount, 
-        method: method, 
-        type: 'deposit',
-        target_account: targetAccount,
-        reference: reference, // Ensure this column exists in your Supabase table
-        // status: 'pending'
-    }]);
-
-if (txError) throw txError;
-
-alert(`Deposit request submitted!\n\nPlease use Reference: ${reference}`);
-closeModal();
-document.getElementById('depositAmount').value = '';
-
-} catch (error) {
-alert("Submission failed: " + error.message);
-} finally {
-btn.disabled = false;
-btn.textContent = "Confirm Deposit";
-}
+    return { amount, fee, total, method: method + (isImmediate ? ' (Immediate)' : '') };
 }
 
 async function processWithdrawal() {
-    const amount = parseFloat(document.getElementById('withdrawAmount').value);
-    const bankName = document.getElementById('withdrawBank').value.trim();
-    const accNumber = document.getElementById('withdrawAccount').value.trim();
-    const sourceAccount = document.getElementById('withdrawSource').value; // 'wallet' or 'pocket'
+    const { amount, fee, total, method } = calculateWithdrawTotal();
+    const bankDetails = document.getElementById('withdrawBank').value.trim();
+    const sourceAccount = document.getElementById('withdrawSource').value;
     const btn = document.getElementById('withdrawSubmitBtn');
 
-    // 1. Basic Validation
-    if (isNaN(amount) || amount <= 0) {
-        alert("Please enter a valid amount.");
-        return;
-    }
-    if (!bankName || !accNumber) {
-        alert("Please provide your bank details.");
-        return;
-    }
-
-    // 2. Balance Validation (Prevent over-withdrawing)
-    // We check against the variable updated in fetchBalances()
-    const currentBalance = (sourceAccount === 'pocket') ? currentPocketBalance : parseFloat(document.getElementById('walletBalanceDisplay').textContent);
+    if (amount <= 0) { alert("Enter a valid amount."); return; }
     
-    if (amount > currentBalance) {
-        alert(`Insufficient funds in your ${sourceAccount}. Current balance: R${currentBalance.toFixed(2)}`);
-        return;
-    }
+    const balance = (sourceAccount === 'pocket') ? currentPocketBalance : currentWalletBalance;
+    if (total > balance) { alert(`Insufficient funds. Total needed: R${total.toFixed(2)}`); return; }
 
     btn.disabled = true;
-    btn.textContent = "Processing...";
-
     try {
-        const { error: txError } = await supa
-            .from('transactions')
-            .insert([{ 
-                user_id: currentUser.id, 
-                amount: amount, 
-                type: 'withdrawal',
-                target_account: sourceAccount,
-                method: 'Bank Transfer',
-                reference: `WITHDRAW-${bankName.substring(0,3).toUpperCase()}`,
-                // We store bank info in a metadata or note column if you have one, 
-                // otherwise the admin checks user history.
-                status: 'pending' 
-            }]);
-
-        if (txError) throw txError;
-
-        alert(`Withdrawal request for R${amount.toFixed(2)} submitted. Please allow 24-48 hours for processing.`);
+        const { error } = await supa.from('transactions').insert([{ 
+            user_id: currentUser.id, amount, fee, type: 'withdrawal',
+            method, target_account: sourceAccount, status: 'pending',
+            reference: `WTH-${Math.floor(Math.random()*10000)}`,
+            metadata: { bankDetails, totalDeducted: total }
+        }]);
+        if (error) throw error;
+        alert("Withdrawal request pending approval.");
         closeModal();
-        
-        // Clear fields
-        document.getElementById('withdrawAmount').value = '';
-        document.getElementById('withdrawBank').value = '';
-        document.getElementById('withdrawAccount').value = '';
-        
-    } catch (error) {
-        alert("Withdrawal failed: " + error.message);
-    } finally {
-        btn.disabled = false;
-        btn.textContent = "Confirm Withdrawal";
-    }
+        fetchBalances();
+    } catch (e) { alert(e.message); } finally { btn.disabled = false; }
 }
 
+// --- TRADE LOGIC ---
+function calculateExchange() {
+    const amount = parseFloat(document.getElementById('tradeAmount').value) || 0;
+    const result = amount * EXCHANGE_RATE_NGN;
+    
+    document.getElementById('currentRateDisplay').textContent = `1 ZAR = ${EXCHANGE_RATE_NGN} NGN`;
+    document.getElementById('exchangeResult').innerText = `₦ ${result.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+}
+
+async function processTrade() {
+    const amount = parseFloat(document.getElementById('tradeAmount').value);
+    const recipient = document.getElementById('tradeRecipient').value.trim();
+    const btn = document.getElementById('tradeSubmitBtn');
+
+    if (!amount || amount <= 0 || !recipient) { alert("Fill all fields."); return; }
+    if (amount > currentPocketBalance) { alert("Insufficient Pocket funds."); return; }
+
+    btn.disabled = true;
+    try {
+        const { error } = await supa.from('transactions').insert([{ 
+            user_id: currentUser.id, amount, type: 'trade', method: 'ZAR to NGN',
+            target_account: 'pocket', status: 'pending',
+            reference: `TRD-NGN-${Math.floor(Math.random()*9000)}`,
+            recipient_info: recipient
+        }]);
+        if (error) throw error;
+        alert("Trade request submitted.");
+        closeModal();
+        fetchBalances();
+    } catch (e) { alert(e.message); } finally { btn.disabled = false; }
+}
+
+// --- HISTORY & UTILS ---
 async function fetchTransactionHistory() {
     const historyList = document.getElementById('historyList');
-    
-    const { data, error } = await supa
-        .from('transactions')
-        .select('*')
-        .eq('user_id', currentUser.id)
-        .order('created_at', { ascending: false })
-        .limit(10); // Show last 10 transactions
+    const { data, error } = await supa.from('transactions')
+        .select('*').eq('user_id', currentUser.id)
+        .order('created_at', { ascending: false }).limit(10);
 
-    if (error) {
-        console.error("Error fetching history:", error);
-        historyList.innerHTML = "<p>Could not load history.</p>";
-        return;
-    }
-
-    if (!data || data.length === 0) {
-        historyList.innerHTML = "<p style='padding:15px; font-size:0.9rem; color:#64748b;'>No transactions found.</p>";
+    if (error || !data || data.length === 0) {
+        historyList.innerHTML = "<p>No recent activity.</p>";
         return;
     }
 
     historyList.innerHTML = data.map(tx => {
         const isDeposit = tx.type === 'deposit';
-        const statusClass = tx.status === 'completed' ? 'status-completed' : 'status-pending';
-        const date = new Date(tx.created_at).toLocaleDateString('en-ZA', { day: '2-digit', month: 'short' });
-
         return `
             <div class="history-item">
                 <div class="history-info">
-                    <span class="history-type">${isDeposit ? '📥' : '📤'} ${tx.type} (${tx.target_account})</span>
-                    <span class="history-date">${date} • Ref: ${tx.reference || 'N/A'}</span>
+                    <span class="history-type">${isDeposit ? '📥' : '📤'} ${tx.type}</span>
+                    <span class="history-date">${new Date(tx.created_at).toLocaleDateString()}</span>
                 </div>
                 <div style="text-align: right;">
                     <div class="history-amount" style="color: ${isDeposit ? '#10b981' : '#ef4444'};">
                         ${isDeposit ? '+' : '-'} R${tx.amount.toFixed(2)}
                     </div>
-                    <span class="status-badge ${statusClass}">${tx.status || 'pending'}</span>
+                    <span class="status-badge status-${tx.status}">${tx.status}</span>
                 </div>
-            </div>
-        `;
+            </div>`;
     }).join('');
 }
+
+async function handleLogout() { await supa.auth.signOut(); window.location.href = 'index.html'; }
+
+window.onload = checkUser;
+window.onclick = (e) => { if (e.target.classList.contains('modal')) closeModal(); };
