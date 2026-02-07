@@ -92,7 +92,7 @@ registerForm.addEventListener('submit', async (e) => {
       if (typeof toggleAuth === 'function') {
         toggleAuth('login');
       } else {
-        window.location.href = '/dashboard.html';
+        window.location.href = 'dashboard.html';
       }
     }, 1500);
 
