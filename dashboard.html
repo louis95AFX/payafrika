@@ -1,247 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PayAfrika | Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="dashboard.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | PayAfrika</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="dashboard.css">
 
 </head>
 <body>
 
-<div class="forex-ticker">
-    <div class="ticker-wrapper" id="tickerWrapper"></div>
-</div>
+    <nav class="navbar" id="navbar" style="display: none;">
+        <div class="nav-logo"><img src="pay1.png" alt="PayAfrika"></div>
+        <div class="nav-welcome">Hi, <span id="navUserName">User</span></div>
+    </nav>
 
-<header class="top-bar">
-    <img src="pay1.png" alt="PayAfrika">
-    <div>Welcome, <span id="displayUserName">User</span></div>
-</header>
-
-<div class="dashboard-container">
-    <div class="tab-control">
-        <button class="tab-btn active" onclick="switchTab('wallet', this)">Wallet</button>
-        <button class="tab-btn" onclick="switchTab('pocket', this)">Pocket</button>
-        <button class="tab-btn" onclick="switchTab('loan', this)">Loan</button>
-    </div>
-
-    <div id="wallet-view" class="view-content">
-        <div class="balance-card wallet-bg">
-            <p class="balance-label">Available Balance</p>
-            <div class="balance-amount" id="walletBalanceDisplay">R --.--</div>
-        </div>
-        <div class="action-grid">
-            <button class="action-btn" onclick="openModal('depositMethodModal')">
-                <span class="action-icon">📥</span>Deposit
-            </button>
-            <button class="action-btn" onclick="openModal('withdrawModal')">
-                <span class="action-icon">🏧</span>Withdraw
-            </button>
-            <button class="action-btn" onclick="openModal('tradeModal')">
-                <span class="action-icon">📈</span>Trade
-            </button>
-        </div>
-    </div>
-
-    <div id="pocket-view" class="view-content" style="display:none;">
-        <div class="balance-card pocket-bg">
-            <p class="balance-label">Pocket Savings</p>
-            <div class="balance-amount" id="pocketBalanceDisplay">R --.--</div>
-        </div>
-        <div class="action-grid">
-            <button class="action-btn" onclick="openModal('depositMethodModal')">
-                <span class="action-icon">🔒</span>Deposit
-            </button>
-            <button class="action-btn" onclick="openModal('withdrawModal')">
-                <span class="action-icon">🏧</span>Withdraw
-            </button>
-            <button class="action-btn" onclick="openModal('tradeModal')">
-                <span class="action-icon">📈</span>Trade
-            </button>
-        </div>
-    </div>
-
-    <div id="loan-view" class="view-content" style="display:none;">
-        <!-- <div class="balance-card loan-bg">
-            <p class="balance-label">Total Debt</p>
-            <div class="balance-amount" id="loanBalanceDisplay">R --.--</div>
-            <div class="savings-progress-container">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="loanUsageBar"></div>
-                </div>
-                <p class="progress-text" id="loanLimitText">R 0.00 of R 0.00 limit used</p>
+    <div id="depositModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Deposit</h3>
+            <p>Choose your preferred method and amount.</p>
+            
+            <input type="hidden" id="depositTarget" value="wallet">
+    
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Deposit Method</label>
+                <select id="depositMethod" class="modal-input" style="margin-top: 5px;" onchange="updateBankDetails()">
+                    <option value="EFT">EFT (Electronic Funds Transfer)</option>
+                    <option value="ATM">ATM Deposit</option>
+                    <option value="OTC">Bank Deposit OTC (Over the Counter)</option>
+                </select>
             </div>
-        </div> -->
-        <div class="action-grid">
-            <button class="action-btn" onclick="openModal('requestLoanModal')">
-                <span class="action-icon">➕</span>Get Loan
-            </button>
-            <button class="action-btn" onclick="openModal('tradeModal')">
-                <span class="action-icon">📈</span>Trade
-            </button>
+    
+            <div id="bankDetailsBox" style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 15px; margin-bottom: 20px; text-align: left; font-size: 0.9rem;">
+                <strong style="color: var(--primary-emerald); display: block; margin-bottom: 5px;">Deposit to:</strong>
+                <div id="bankDetailsContent">
+                    </div>
+            </div>
+    
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Amount</label>
+                <input type="number" id="depositAmount" class="modal-input" placeholder="0.00" style="margin-top: 5px;">
+            </div>
+    
+            <button id="depositSubmitBtn" class="confirm-btn" onclick="processDeposit()">Confirm Deposit</button>
+            <p><a href="#" onclick="closeModal()" style="color: #64748b; font-size: 0.9rem; text-decoration: none;">Cancel</a></p>
         </div>
     </div>
-</div>
 
-<div id="depositMethodModal" class="db-modal">
-    <div class="db-modal-content">
-        <span class="close-x" onclick="closeModal('depositMethodModal')">&times;</span>
-        <h3>Deposit Funds</h3>
-        <p style="margin-bottom: 15px; font-size: 0.9rem; color: #666;">Select your deposit method:</p>
-        
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-            <button class="method-btn" onclick="prepDeposit('EFT', 0)">
-                <span>🏦 EFT</span> <span style="margin-left: auto; color: #2ecc71;">FREE</span>
-            </button>
-            <button class="method-btn" onclick="prepDeposit('ATM', 0.015)">
-                <span>🏧 ATM</span> <span style="margin-left: auto; color: #f39c12;">1.5% Fee</span>
-            </button>
-            <button class="method-btn" onclick="prepDeposit('BANK', 0.03)">
-                <span>💵 BANK DEPOSIT</span> <span style="margin-left: auto; color: #e74c3c;">3% Fee</span>
-            </button>
+    <div id="withdrawModal" class="modal">
+        <div class="modal-content">
+            <h3>Withdraw Funds</h3>
+            <p>Transfer money from your <span id="withdrawSourceText">account</span> to your bank.</p>
+            
+            <input type="hidden" id="withdrawSource" value="wallet">
+    
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Bank Name</label>
+                <input type="text" id="withdrawBank" class="modal-input" placeholder="e.g. Standard Bank" style="margin-top: 5px;">
+            </div>
+    
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Account Number</label>
+                <input type="number" id="withdrawAccount" class="modal-input" placeholder="Account Number" style="margin-top: 5px;">
+            </div>
+    
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Amount to Withdraw</label>
+                <input type="number" id="withdrawAmount" class="modal-input" placeholder="0.00" style="margin-top: 5px;">
+            </div>
+    
+            <button id="withdrawSubmitBtn" class="confirm-btn" onclick="processWithdrawal()" style="background-color: #ef4444;">Confirm Withdrawal</button>
+            <p><a href="#" onclick="closeModal()" style="color: #64748b; font-size: 0.9rem; text-decoration: none;">Cancel</a></p>
         </div>
     </div>
-</div>
+    <div class="main-container">
+        <div id="loading">
+            <p>Syncing your accounts...</p>
+        </div>
 
-<div id="depositActionModal" class="db-modal">
-    <div class="db-modal-content">
-        <span class="close-x" onclick="closeModal('depositActionModal')">&times;</span>
-        <h3 id="depositModalTitle">Deposit Funds</h3>
-        
-        <div id="depositInputArea">
-            <div class="input-group">
-                <label>Amount to Deposit (R)</label>
-                <input type="number" id="depositInput" placeholder="0.00" oninput="calculateLiveFee()">
+        <div class="dashboard-container" id="dashboardUI" style="display: none;">
+            <div class="tabs-header">
+                <button class="tab-btn active" onclick="openTab(event, 'wallet')">Wallet</button>
+                <button class="tab-btn" onclick="openTab(event, 'pocket')">Pocket</button>
+                <button class="tab-btn" onclick="openTab(event, 'loan')">Loan</button>
             </div>
 
-            <div id="depositSummary" style="background: #f9f9f9; padding: 15px; border-radius: 10px; border: 1px dashed #ccc; margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                    <span>Service Fee (<span id="summaryFeePercent">0</span>%):</span>
-                    <span id="summaryFeeAmount" style="color: #e74c3c;">- R 0.00</span>
+            <div id="wallet" class="tab-content active">
+                <div class="balance-card">
+                    <span>Main Balance</span>
+                    <div class="balance-amount">R<span id="walletBalanceDisplay">0.00</span></div>
                 </div>
-                <div style="display: flex; justify-content: space-between; font-weight: 700; border-top: 1px solid #ddd; padding-top: 5px; margin-top: 5px;">
-                    <span>Total to Deposit:</span>
-                    <span id="summaryTotalAmount" style="color: #2ecc71;">R 0.00</span>
+                <div class="action-grid">
+                    <button class="action-btn" disabled style="opacity: 0.5; cursor: not-allowed; filter: grayscale(1);">📥 Deposit</button>
+                    <button class="action-btn" disabled style="opacity: 0.5; cursor: not-allowed; filter: grayscale(1);">📥 Withdraw</button>
                 </div>
             </div>
-            <button class="primary-btn" onclick="showBankDetails()">Generate Payment Reference</button>
-        </div>
 
-        <div id="bankDetailsArea" style="display: none; animation: fadeIn 0.3s;">
-            <div style="background: #eef2f7; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 0.9rem;">
-                <p><strong>Bank:</strong> First National Bank (FNB)</p>
-                <p><strong>Account Name:</strong> PayAfrika (Pty) Ltd</p>
-                <p><strong>Account No:</strong> 62890011223</p>
-                <p><strong>Branch Code:</strong> 250655</p>
-                <p><strong>Reference:</strong> <span id="paymentReference" style="color: #007bff; font-weight: bold; font-size: 1.1rem;">PA-12345</span></p>
+            <div id="pocket" class="tab-content">
+                <div class="balance-card" style="background: var(--primary-emerald);">
+                    <span>Pocket Savings</span>
+                    <div class="balance-amount">R<span id="pocketBalanceDisplay">0.00</span></div>
+                </div>
+                <div class="action-grid">
+                    <button class="action-btn" onclick="openModal('deposit', 'pocket')">📥 Deposit</button>
+                    <button class="action-btn" onclick="openModal('withdraw', 'pocket')">📤 Withdrawal</button>
+                    <button class="action-btn">📈 Trade</button>
+                </div>
             </div>
-            <p style="font-size: 0.8rem; color: #666; margin-bottom: 15px;">⚠️ Please use the reference above. Funds will reflect after 1-2 business days.</p>
-            <button class="primary-btn" onclick="executeDeposit()">I Have Made the Payment</button>
-        </div>
-    </div>
-</div>
 
-<div id="withdrawModal" class="db-modal">
-    <div class="db-modal-content">
-        <span class="close-x" onclick="closeModal('withdrawModal')">&times;</span>
-        <h3>Withdraw Funds</h3>
-        <div class="input-group">
-            <label>Amount to Withdraw (R)</label>
-            <input type="number" id="withdrawInput" placeholder="0.00">
-        </div>
-        <button class="primary-btn" onclick="executeWithdraw()">Withdraw to Bank</button>
-    </div>
-</div>
-
-
-<div id="tradeModal" class="db-modal">
-    <div class="db-modal-content">
-        <span class="close-x" onclick="closeModal('tradeModal')">&times;</span>
-        <h3>Trade & Transfer</h3>
-        
-        <div class="input-group">
-            <label>From (Sell)</label>
-            <select id="tradeFrom">
-                <option value="ZAR">ZAR (Available Balance)</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label>To (Buy/Send)</label>
-            <select id="tradeTo" onchange="toggleCryptoFields()">
-                <option value="BSA">BSA (Internal Wallet)</option>
-                <option value="KNG">KNG (External Exchange)</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label>Amount (ZAR)</label>
-            <input type="number" id="tradeAmount" placeholder="0.00">
-        </div>
-
-        <div id="externalWalletGroup" style="display: none;">
-            <div class="input-group">
-                <label>Recipient KNG Wallet Address</label>
-                <input type="text" id="walletAddress" placeholder="e.g. 0x71C... or KNG-Address">
-                <small style="color: #666;">Funds will be converted and sent to this address.</small>
+            <div id="loan" class="tab-content">
+                <h2>Loan Registration</h2>
+                <p>Form content would go here...</p>
+            </div>
+            <div class="history-section" style="margin-top: 30px; padding: 0 20px;">
+                <h3 style="color: #1e293b; margin-bottom: 15px;">Recent Activity</h3>
+                <div id="historyList" class="history-list">
+                    <p style="color: #64748b; font-size: 0.9rem;">Loading history...</p>
+                </div>
+            </div>
+            <div style="padding: 20px; text-align: center;">
+                <a href="#" onclick="handleLogout()" style="color: #ef4444; font-weight: 500; text-decoration: none;">Sign Out</a>
             </div>
         </div>
-
-        <button class="primary-btn" onclick="executeTrade()">Execute Transaction</button>
     </div>
-</div>
 
-<div id="requestLoanModal" class="db-modal">
-    <div class="db-modal-content">
-        <span class="close-x" onclick="closeModal('requestLoanModal')">&times;</span>
-        <h3>Loan Registration</h3>
-        <p style="margin-bottom: 15px; font-size: 0.9rem; color: #666;">Complete your profile to unlock credit facilities.</p>
-        
-        <div class="input-group">
-            <label>Full Legal Name</label>
-            <input type="text" id="regName" placeholder="As it appears on ID">
-        </div>
-
-        <div class="input-group">
-            <label>ID / Passport Number</label>
-            <input type="text" id="regID" placeholder="Enter ID Number">
-        </div>
-
-        <div class="input-group">
-            <label>Employment Status</label>
-            <select id="regWork">
-                <option value="">Select Status</option>
-                <option value="employed">Full-Time Employed</option>
-                <option value="self">Self-Employed / Business</option>
-                <option value="other">Other</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label>Monthly Income (R)</label>
-            <input type="number" id="regIncome" placeholder="e.g. 15000">
-        </div>
-
-        <button class="primary-btn" onclick="submitLoanRegistration()">Verify & Continue</button>
-    </div>
-</div>
-
-<div id="actualLoanActionModal" class="db-modal">
-    <div class="db-modal-content">
-        <span class="close-x" onclick="closeModal('actualLoanActionModal')">&times;</span>
-        <h3>Request Loan Amount</h3>
-        <p id="availableLimitText" style="margin-bottom: 10px; font-weight: 600; color: #2ecc71;"></p>
-        <div class="input-group">
-            <label>Amount (R)</label>
-            <input type="number" id="loanRequestInput" placeholder="0.00">
-        </div>
-        <button class="primary-btn" onclick="executeLoan()">Deposit Loan to Wallet</button>
-    </div>
-</div>
-<script src="dashboard.js">
-
-</script>
-
+<script src="dashboard.js"></script>
 </body>
 </html>

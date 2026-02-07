@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <style>
         .services-grid {
           display: flex;               /* Horizontal row */
@@ -87,6 +89,28 @@
     .toggle-password svg {
         display: block;
     }
+    .spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ffffff;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  animation: rotation 1s linear infinite;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+@keyframes rotation {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Optional: dim the button when disabled */
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
         </style>
         
 </head>
@@ -425,21 +449,7 @@
             </div>
         </div>
     </section>
-    
 
-    <!-- <section id="contact">
-        <div class="container">
-            <div class="contact-form">
-                <h2>Get Started Today</h2>
-                <form id="mvpForm">
-                    <div class="form-group"><input type="text" placeholder="Full Name" required></div>
-                    <div class="form-group"><input type="email" placeholder="Email Address" required></div>
-                    <div class="form-group"><input type="tel" placeholder="Phone Number" required></div>
-                    <button type="submit" class="btn-primary" style="width: 100%; background: var(--green); color: var(--navy);">Submit Application</button>
-                </form>
-            </div>
-        </div>
-    </section> -->
 </main>
 <div id="authModal" class="modal-overlay">
     <div class="modal-content">
@@ -580,21 +590,9 @@
       </div>
     </div>
   </footer>
-  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
-
-<!-- 1️⃣ Load Supabase JS first -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- 2️⃣ Main Script -->
 <script src="script.js">
-  
 </script>
-
-
 </body>
-
 </html>
-
-

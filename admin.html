@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | PayAfrika</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { --emerald: #059669; --slate: #1e293b; }
+        body { font-family: 'Outfit', sans-serif; background: #f8fafc; margin: 0; min-height: 100vh; }
+        
+        /* Login Overlay */
+        #adminLoginOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--slate); display: flex; align-items: center; justify-content: center;
+            z-index: 9999;
+        }
+        .login-box {
+            background: white; padding: 40px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center;
+        }
+        .login-box input {
+            width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;
+        }
+        .login-btn {
+            background: var(--emerald); color: white; border: none; width: 100%; padding: 14px; 
+            border-radius: 8px; cursor: pointer; font-weight: 600; margin-top: 10px;
+        }
+
+        /* Main Content (Hidden until admin verified) */
+        #adminContent { display: none; padding: 40px; }
+        .admin-card { background: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 25px; max-width: 1000px; margin: 0 auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { text-align: left; padding: 12px; background: #f1f5f9; color: var(--slate); }
+        td { padding: 12px; border-bottom: 1px solid #e2e8f0; }
+        .approve-btn { background: var(--emerald); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .reject-btn { background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-left: 5px; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; background: #fef3c7; color: #92400e; text-transform: uppercase; }
+        #statusMsg { padding: 10px; margin-bottom: 10px; border-radius: 8px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="adminLoginOverlay">
+        <div class="login-box">
+            <h2 style="color: var(--slate); margin-bottom: 5px;">PayAfrika</h2>
+            <p style="color: #64748b; margin-bottom: 25px;">Administrative Access Only</p>
+            <input type="email" id="adminEmail" placeholder="Admin Email">
+            <input type="password" id="adminPass" placeholder="Password">
+            <button class="login-btn" onclick="handleAdminLogin()">Verify Identity</button>
+        </div>
+    </div>
+
+    <div id="adminContent">
+        <div class="admin-card">
+            <div id="statusMsg"></div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>Admin Approval</h2>
+                <button onclick="handleLogout()" style="background: none; border: none; color: #ef4444; cursor: pointer; font-weight: 600;">Sign Out</button>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Customer</th> <th>Method</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="txBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const supabaseUrl = 'https://wnajtvhshsfnzgrtcwub.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InduYWp0dmhzaHNmbnpncnRjd3ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxMTM2NTUsImV4cCI6MjA4NTY4OTY1NX0.yGzxLL6oRg2SCs6g7UUdIMb7wmFPGFPC3IVDk5Da-HU'; 
+        const supa = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // --- 1. LOGIN HANDLING ---
+        // --- 1. UPDATED LOGIN HANDLING ---
+async function handleAdminLogin() {
+    const email = document.getElementById('adminEmail').value;
+    const password = document.getElementById('adminPass').value;
+
+    // Hardcoded credentials for internal access
+    const ADMIN_USER = "admin@payafrika.com";
+    const ADMIN_PASS = "1234";
+
+    if (email === ADMIN_USER && password === ADMIN_PASS) {
+        // Bypass Supabase auth and show the panel directly
+        bypassToAdmin();
+    } else {
+        // Fallback to normal Supabase login if you still want that option
+        const { data, error } = await supa.auth.signInWithPassword({ email, password });
+        if (error) {
+            alert("Login Failed: Incorrect credentials.");
+            return;
+        }
+        checkAdminAccess(data.user);
+    }
+}
+
+// Helper function to bypass checks
+function bypassToAdmin() {
+    document.getElementById('adminLoginOverlay').style.display = 'none';
+    document.getElementById('adminContent').style.display = 'block';
+    loadPending();
+}
+
+        // --- 2. AUTH & ROLE CHECK ---
+        async function checkAdminAccess(user) {
+    if (!user) {
+        const { data: { session } } = await supa.auth.getSession();
+        user = session ? session.user : null;
+    }
+    
+    if (!user) return; // Still on login screen
+
+    // REMOVED .single() to avoid the coercion error
+    const { data: profiles, error } = await supa
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', user.id);
+
+    if (error) {
+        console.error("Database Error:", error);
+        return;
+    }
+
+    // Check if profile exists AND if they are admin
+    if (!profiles || profiles.length === 0 || !profiles[0].is_admin) {
+        // alert("Access Denied: You are not marked as an Admin.");
+        await supa.auth.signOut();
+        location.reload();
+        return;
+    }
+
+    // Success
+    document.getElementById('adminLoginOverlay').style.display = 'none';
+    document.getElementById('adminContent').style.display = 'block';
+    loadPending();
+}
+        // --- 3. DATA LOADING ---
+        async function loadPending() {
+    const tbody = document.getElementById('txBody');
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Fetching data...</td></tr>';
+
+    const { data: txs, error: txErr } = await supa
+        .from('transactions')
+        .select('*')
+        .eq('status', 'pending');
+
+    if (txErr) {
+        console.error("TX Error:", txErr.message);
+        tbody.innerHTML = `<tr><td colspan="6" style="color:red;">Error: ${txErr.message}</td></tr>`;
+        return;
+    }
+
+    if (!txs || txs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No pending deposits found.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = ''; 
+
+    for (const tx of txs) {
+        // Fetch BOTH first_name and pocket_balance
+        const { data: profile, error: profileErr } = await supa
+    .from('profiles')
+    .select('*') // Select all for a moment to see what's available
+    .eq('id', tx.user_id)
+    .maybeSingle();
+
+    if (profileErr) console.error("Error fetching profile:", profileErr);
+
+// Fallback logic
+const userBalance = profile?.pocket_balance || 0;
+const firstName = profile?.first_name || "Name Missing";
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${new Date(tx.created_at).toLocaleDateString()}</td>
+            <td><strong>${firstName}</strong><br><small style="color: #64748b;">${tx.user_id.substring(0,8)}</small></td>
+            <td><strong>${tx.method || 'N/A'}</strong></td>
+            <td style="color: #059669; font-weight: bold;">R${parseFloat(tx.amount).toFixed(2)}</td>
+            <td><span class="badge">${tx.status}</span></td>
+            <td>
+                <button class="approve-btn" onclick="approve('${tx.id}', '${tx.user_id}', ${tx.amount}, ${userBalance})">Approve</button>
+                <button class="reject-btn" onclick="reject('${tx.id}')">Reject</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    }
+}
+        // --- 4. ACTIONS ---
+        async function approve(txId, userId, amount, currentBalance) {
+            if(!confirm("Approve funds?")) return;
+            const { error: txErr } = await supa.from('transactions').update({ status: 'completed' }).eq('id', txId);
+            if (txErr) return alert(txErr.message);
+
+            const newTotal = parseFloat(currentBalance) + parseFloat(amount);
+            await supa.from('profiles').update({ pocket_balance: newTotal }).eq('id', userId);
+            
+            showMsg("Approved!", "emerald");
+            loadPending();
+        }
+
+        async function reject(txId) {
+            if(!confirm("Reject funds?")) return;
+            await supa.from('transactions').update({ status: 'failed' }).eq('id', txId);
+            showMsg("Rejected", "slate");
+            loadPending();
+        }
+
+        function showMsg(text, color) {
+            const m = document.getElementById('statusMsg');
+            m.textContent = text; m.style.display = 'block';
+            m.style.background = color === 'emerald' ? '#d1fae5' : '#f1f5f9';
+            setTimeout(() => m.style.display = 'none', 2000);
+        }
+
+        async function handleLogout() {
+            await supa.auth.signOut();
+            location.reload();
+        }
+
+        // Check if already logged in on page load
+        window.onload = () => checkAdminAccess();
+    </script>
+</body>
+</html>
