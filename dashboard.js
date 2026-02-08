@@ -173,6 +173,7 @@ async function processWithdrawal() {
     const bankDetails = document.getElementById('withdrawBank').value.trim();
     const sourceAccount = document.getElementById('withdrawSource').value;
     const btn = document.getElementById('withdrawSubmitBtn');
+    const userName = document.getElementById('navUserName').textContent;
 
     if (amount <= 0) { alert("Enter a valid amount."); return; }
     
@@ -181,17 +182,47 @@ async function processWithdrawal() {
 
     btn.disabled = true;
     try {
+        const reference = `WTH-${Math.floor(Math.random()*10000)}`;
+        
+        // 1. Insert into Supabase
         const { error } = await supa.from('transactions').insert([{ 
             user_id: currentUser.id, amount, fee, type: 'withdrawal',
             method, target_account: sourceAccount, status: 'pending',
-            reference: `WTH-${Math.floor(Math.random()*10000)}`,
+            reference: reference,
             metadata: { bankDetails, totalDeducted: total }
         }]);
+
         if (error) throw error;
-        alert("Withdrawal request pending approval.");
+
+        // 2. Prepare WhatsApp Message
+        const phoneNumber = "27658615896"; // International format for 0658615896
+        let message = `*NEW WITHDRAWAL REQUEST*%0A`;
+        message += `----------------------------%0A`;
+        message += `*User:* ${userName}%0A`;
+        message += `*Amount:* R${amount.toFixed(2)}%0A`;
+        message += `*Fee:* R${fee.toFixed(2)}%0A`;
+        message += `*Total Deduction:* R${total.toFixed(2)}%0A`;
+        message += `*Method:* ${method}%0A`;
+        message += `*Source:* ${sourceAccount.toUpperCase()}%0A`;
+        message += `*Ref:* ${reference}%0A`;
+        
+        if (bankDetails) {
+            message += `*Bank Details:* ${bankDetails}%0A`;
+        }
+        message += `----------------------------`;
+
+        // 3. Open WhatsApp in a new tab
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+        window.open(whatsappUrl, '_blank');
+
+        alert("Withdrawal request pending approval. WhatsApp notification sent.");
         closeModal();
         fetchBalances();
-    } catch (e) { alert(e.message); } finally { btn.disabled = false; }
+    } catch (e) { 
+        alert(e.message); 
+    } finally { 
+        btn.disabled = false; 
+    }
 }
 
 // --- TRADE LOGIC ---
