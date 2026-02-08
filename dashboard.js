@@ -8,8 +8,7 @@ let currentPocketBalance = 0;
 let currentWalletBalance = 0;
 
 // Configurable Rates
-const EXCHANGE_RATE_NGN = 80.45; // 1 ZAR = 80.45 NGN
-const FEE_RATES = {
+let EXCHANGE_RATE_NGN = 80.45;const FEE_RATES = {
     CASH: 0.05,          // 5% for Cash
     IMMEDIATE_EFT: 0.02, // 2% for Immediate EFT
     STANDARD_EFT: 0.00   // 0% for Standard
@@ -21,10 +20,11 @@ async function checkUser() {
     if (!session) { window.location.href = 'index.html'; return; }
 
     currentUser = session.user;
-    document.getElementById('navUserName').textContent = currentUser.user_metadata.first_name || currentUser.email.split('@')[0];
     
-    await fetchBalances();
+    // Fetch rate and balances in parallel for speed
+    await Promise.all([fetchBalances(), fetchCurrentRate()]);
 
+    document.getElementById('navUserName').textContent = currentUser.user_metadata.first_name || currentUser.email.split('@')[0];
     document.getElementById('loading').style.display = 'none';
     document.getElementById('navbar').style.display = 'flex';
     document.getElementById('dashboardUI').style.display = 'block';
@@ -75,12 +75,12 @@ function openModal(type, target = 'wallet') {
     if (type === 'deposit') {
         document.getElementById('depositTarget').value = target;
         document.getElementById('modalTitle').textContent = `Deposit to ${target.charAt(0).toUpperCase() + target.slice(1)}`;
-        document.getElementById('depositModal').style.display = 'block';
+        document.getElementById('depositModal').style.display = 'flex';
         updateBankDetails();
     } else if (type === 'withdraw') {
         document.getElementById('withdrawSource').value = target;
         document.getElementById('withdrawSourceText').textContent = target.charAt(0).toUpperCase() + target.slice(1);
-        document.getElementById('withdrawModal').style.display = 'block';
+        document.getElementById('withdrawModal').style.display = 'flex';
         toggleWithdrawFields(); // Initialize view
     } else if (type === 'trade') {
         document.getElementById('tradeModal').style.display = 'block';
@@ -199,8 +199,11 @@ function calculateExchange() {
     const amount = parseFloat(document.getElementById('tradeAmount').value) || 0;
     const result = amount * EXCHANGE_RATE_NGN;
     
-    document.getElementById('currentRateDisplay').textContent = `1 ZAR = ${EXCHANGE_RATE_NGN} NGN`;
-    document.getElementById('exchangeResult').innerText = `₦ ${result.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+    const rateDisplay = document.getElementById('currentRateDisplay');
+    const resultDisplay = document.getElementById('exchangeResult');
+
+    if (rateDisplay) rateDisplay.textContent = `1 ZAR = ${EXCHANGE_RATE_NGN} NGN`;
+    if (resultDisplay) resultDisplay.innerText = `₦ ${result.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
 }
 
 async function processTrade() {
@@ -255,6 +258,67 @@ async function fetchTransactionHistory() {
             </div>`;
     }).join('');
 }
+
+let currentZarNgnRate = 80.45; // Default fallback
+
+// 1. Fetch the rate from Supabase
+async function fetchCurrentRate() {
+    try {
+        const { data, error } = await supa
+            .from('exchange_rates') // Plural as per your SQL
+            .select('rate')
+            .eq('pair', 'ZAR_NGN')  // Column is 'pair'
+            .maybeSingle();
+
+        if (error) throw error;
+
+        if (data && data.rate) {
+            // Update the global value to 323
+            EXCHANGE_RATE_NGN = parseFloat(data.rate); 
+            
+            // UPDATE THE HTML DISPLAY
+            const rateDisplay = document.getElementById('currentRateDisplay');
+            if (rateDisplay) {
+                rateDisplay.textContent = `1 ZAR = ${EXCHANGE_RATE_NGN} NGN`;
+            }
+            
+            // Refresh the "Recipient Gets" calculation if the modal is open
+            if (typeof calculateExchange === "function") {
+                calculateExchange();
+            }
+        }
+    } catch (err) {
+        console.error("Error fetching rate:", err.message);
+        document.getElementById('currentRateDisplay').textContent = "Rate unavailable";
+    }
+}
+// 2. Update the UI text
+function updateRateUI() {
+    const rateDisplay = document.getElementById('currentRateDisplay');
+    if (rateDisplay) {
+        rateDisplay.innerText = `1 ZAR = ${currentZarNgnRate} NGN`;
+    }
+}
+
+// 3. Update your exchange calculation function
+function calculateExchange() {
+    const amountInput = document.getElementById('tradeAmount');
+    const resultDisplay = document.getElementById('exchangeResult');
+    
+    // Use the live variable (which should now be 323)
+    const zarAmount = parseFloat(amountInput.value) || 0;
+    const ngnResult = zarAmount * EXCHANGE_RATE_NGN;
+
+    // Update the "Recipient Gets" display
+    if (resultDisplay) {
+        resultDisplay.innerText = `₦ ${ngnResult.toLocaleString(undefined, {
+            minimumFractionDigits: 2, 
+            maximumFractionDigits: 2
+        })}`;
+    }
+}
+
+// Call fetchCurrentRate() inside your initialization function (e.g., when the user logs in)
 
 async function handleLogout() { await supa.auth.signOut(); window.location.href = 'index.html'; }
 

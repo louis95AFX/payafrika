@@ -81,7 +81,7 @@
             </div>
     
             <div style="text-align: left; margin-bottom: 10px;">
-                <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Amount to Withdraw (ZAR)</label>
+                <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Amount to Withdraw (BSA)</label>
                 <input type="number" id="withdrawAmount" class="modal-input" placeholder="0.00" oninput="calculateWithdrawTotal()" style="margin-top: 5px;">
             </div>
     
@@ -104,29 +104,28 @@
     <div id="tradeModal" class="modal">
         <div class="modal-content">
             <h3>International Transfer</h3>
-            <p>Convert ZAR from your Pocket to NGN.</p>
+            <p>Convert BSA from your Pocket to KNG.</p>
     
             <div id="rateBanner" style="background: #eff6ff; border: 1px solid #dbeafe; color: #1e40af; padding: 12px; border-radius: 12px; margin-bottom: 20px; font-size: 0.9rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span><strong>Current Rate</strong></span>
-                    <span id="currentRateDisplay" style="font-weight: 700;">1 ZAR = 80.45 NGN</span>
+                    <span id="currentRateDisplay" style="font-weight: 700;">Loading...</span>
                 </div>
             </div>
-            
             <div style="text-align: left; margin-bottom: 15px;">
-                <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Recipient NGN Wallet ID / Email</label>
+                <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Recipient KNG Wallet ID / Email</label>
                 <input type="text" id="tradeRecipient" class="modal-input" placeholder="e.g. user@payafrika.ng" style="margin-top: 5px;">
             </div>
     
             <div style="display: flex; gap: 10px; margin-bottom: 20px;">
                 <div style="flex: 1; text-align: left;">
-                    <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">You Send (ZAR)</label>
+                    <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">You Send (BSA)</label>
                     <input type="number" id="tradeAmount" class="modal-input" placeholder="0.00" oninput="calculateExchange()" style="margin-top: 5px;">
                 </div>
                 <div style="flex: 1; text-align: left;">
-                    <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Recipient Gets (NGN)</label>
+                    <label style="font-size: 0.8rem; font-weight: 600; color: #64748b;">Recipient Gets (KNG)</label>
                     <div id="exchangeResult" style="height: 45px; display: flex; align-items: center; font-weight: 700; font-size: 1.1rem; color: var(--primary-emerald); margin-top: 5px;">₦ 0.00</div>
-                    <input type="hidden" id="targetCurrency" value="NGN">
+                    <input type="hidden" id="targetCurrency" value="KNG">
                 </div>
             </div>
     
