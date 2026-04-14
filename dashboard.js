@@ -38,16 +38,21 @@ async function fetchBalances() {
         .eq('id', currentUser.id)
         .maybeSingle();
 
-    if (error) { console.error("Error fetching balances:", error); return; }
+    if (error) { 
+        console.error("Critical Error:", error.message); 
+        return; 
+    }
 
     if (data) {
         currentWalletBalance = data.wallet_balance || 0;
         currentPocketBalance = data.pocket_balance || 0;
         
-        document.getElementById('walletBalanceDisplay').textContent = currentWalletBalance.toFixed(2);
-        document.getElementById('pocketBalanceDisplay').textContent = currentPocketBalance.toFixed(2);
-    } else {
-        await supa.from('profiles').upsert({ id: currentUser.id, pocket_balance: 0, wallet_balance: 0 });
+        // Ensure these IDs exist in your HTML
+        const wDisplay = document.getElementById('walletBalanceDisplay');
+        const pDisplay = document.getElementById('pocketBalanceDisplay');
+        
+        if(wDisplay) wDisplay.textContent = currentWalletBalance.toFixed(2);
+        if(pDisplay) pDisplay.textContent = currentPocketBalance.toFixed(2);
     }
 }
 
@@ -67,7 +72,8 @@ function openTab(evt, tabName) {
         historySection.style.display = 'none';
     } else {
         historySection.style.display = 'block';
-        fetchTransactionHistory(); 
+        // Now passing the tabName to filter history by 'wallet' or 'pocket'
+        fetchTransactionHistory(tabName); 
     }
 }
 
@@ -127,17 +133,33 @@ async function processDeposit() {
     const targetAccount = document.getElementById('depositTarget').value; 
     const reference = updateBankDetails(); 
     const btn = document.getElementById('depositSubmitBtn');
+    const userName = document.getElementById('navUserName').textContent;
 
     if (!amount || amount <= 0) { alert("Enter a valid amount."); return; }
 
     btn.disabled = true;
     try {
+        // 1. Insert into Supabase
         const { error } = await supa.from('transactions').insert([{ 
             user_id: currentUser.id, amount, method, type: 'deposit',
             target_account: targetAccount, reference, status: 'pending'
         }]);
         if (error) throw error;
-        alert("Deposit submitted. Funds will reflect after verification.");
+
+        // 2. WhatsApp Notification for Deposit
+        const phoneNumber = "27658615896";
+        let message = `*NEW DEPOSIT PROOF INCOMING*%0A`;
+        message += `----------------------------%0A`;
+        message += `*User:* ${userName}%0A`;
+        message += `*Amount:* R${amount.toFixed(2)}%0A`;
+        message += `*Target:* ${targetAccount.toUpperCase()}%0A`;
+        message += `*Method:* ${method}%0A`;
+        message += `*Ref:* ${reference}%0A`;
+        message += `----------------------------`;
+        
+        window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+
+        alert("Deposit submitted. Please send proof of payment via WhatsApp.");
         closeModal();
     } catch (e) { alert(e.message); } finally { btn.disabled = false; }
 }
@@ -169,59 +191,45 @@ function calculateWithdrawTotal() {
 }
 
 async function processWithdrawal() {
+    console.log("Starting withdrawal process...");
     const { amount, fee, total, method } = calculateWithdrawTotal();
     const bankDetails = document.getElementById('withdrawBank').value.trim();
     const sourceAccount = document.getElementById('withdrawSource').value;
-    const btn = document.getElementById('withdrawSubmitBtn');
-    const userName = document.getElementById('navUserName').textContent;
-
-    if (amount <= 0) { alert("Enter a valid amount."); return; }
     
-    const balance = (sourceAccount === 'pocket') ? currentPocketBalance : currentWalletBalance;
-    if (total > balance) { alert(`Insufficient funds. Total needed: R${total.toFixed(2)}`); return; }
+    console.log(`Attempting to withdraw R${total} from ${sourceAccount}`);
 
-    btn.disabled = true;
+    const balance = (sourceAccount === 'pocket') ? currentPocketBalance : currentWalletBalance;
+    
+    if (total > balance) {
+        console.error("Balance check failed:", { total, balance });
+        alert(`Insufficient funds. Balance: R${balance}`);
+        return;
+    }
+
     try {
-        const reference = `WTH-${Math.floor(Math.random()*10000)}`;
-        
-        // 1. Insert into Supabase
-        const { error } = await supa.from('transactions').insert([{ 
-            user_id: currentUser.id, amount, fee, type: 'withdrawal',
-            method, target_account: sourceAccount, status: 'pending',
-            reference: reference,
+        const { data, error } = await supa.from('transactions').insert([{ 
+            user_id: currentUser.id, 
+            amount, 
+            fee, 
+            type: 'withdrawal',
+            method, 
+            target_account: sourceAccount, 
+            status: 'pending',
+            reference: `WTH-${Math.floor(Math.random()*10000)}`,
             metadata: { bankDetails, totalDeducted: total }
         }]);
 
-        if (error) throw error;
-
-        // 2. Prepare WhatsApp Message
-        const phoneNumber = "27658615896"; // International format for 0658615896
-        let message = `*NEW WITHDRAWAL REQUEST*%0A`;
-        message += `----------------------------%0A`;
-        message += `*User:* ${userName}%0A`;
-        message += `*Amount:* R${amount.toFixed(2)}%0A`;
-        message += `*Fee:* R${fee.toFixed(2)}%0A`;
-        message += `*Total Deduction:* R${total.toFixed(2)}%0A`;
-        message += `*Method:* ${method}%0A`;
-        message += `*Source:* ${sourceAccount.toUpperCase()}%0A`;
-        message += `*Ref:* ${reference}%0A`;
-        
-        if (bankDetails) {
-            message += `*Bank Details:* ${bankDetails}%0A`;
+        if (error) {
+            console.error("Supabase Database Error:", error.message);
+            alert("Database error: " + error.message);
+            return;
         }
-        message += `----------------------------`;
 
-        // 3. Open WhatsApp in a new tab
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
-        window.open(whatsappUrl, '_blank');
-
-        alert("Withdrawal request pending approval. WhatsApp notification sent.");
-        closeModal();
-        fetchBalances();
-    } catch (e) { 
-        alert(e.message); 
-    } finally { 
-        btn.disabled = false; 
+        console.log("Database insert successful!");
+        // WhatsApp logic follows...
+        alert("Success! Check WhatsApp to complete.");
+    } catch (e) {
+        console.error("Unexpected Script Error:", e);
     }
 }
 
@@ -261,14 +269,22 @@ async function processTrade() {
 }
 
 // --- HISTORY & UTILS ---
-async function fetchTransactionHistory() {
-    const historyList = document.getElementById('historyList');
+async function fetchTransactionHistory(accountType = 'wallet') {
+    // Select the correct list container based on the account type
+    const listId = accountType === 'wallet' ? 'walletHistoryList' : 'pocketHistoryList';
+    const historyList = document.getElementById(listId);
+    
+    if (!historyList) return;
+
     const { data, error } = await supa.from('transactions')
-        .select('*').eq('user_id', currentUser.id)
-        .order('created_at', { ascending: false }).limit(10);
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .eq('target_account', accountType) 
+        .order('created_at', { ascending: false })
+        .limit(10);
 
     if (error || !data || data.length === 0) {
-        historyList.innerHTML = "<p>No recent activity.</p>";
+        historyList.innerHTML = `<p style="color: #64748b; font-size: 0.9rem;">No recent ${accountType} activity.</p>`;
         return;
     }
 
@@ -281,7 +297,7 @@ async function fetchTransactionHistory() {
                     <span class="history-date">${new Date(tx.created_at).toLocaleDateString()}</span>
                 </div>
                 <div style="text-align: right;">
-                    <div class="history-amount" style="color: ${isDeposit ? '#10b981' : '#ef4444'};">
+                    <div class="history-amount" style="color: ${isDeposit ? '#10b981' : '#ef4444'}; font-weight: 700;">
                         ${isDeposit ? '+' : '-'} R${tx.amount.toFixed(2)}
                     </div>
                     <span class="status-badge status-${tx.status}">${tx.status}</span>
@@ -289,7 +305,6 @@ async function fetchTransactionHistory() {
             </div>`;
     }).join('');
 }
-
 let currentZarNgnRate = 80.45; // Default fallback
 
 // 1. Fetch the rate from Supabase

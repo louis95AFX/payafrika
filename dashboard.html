@@ -138,25 +138,32 @@
         <div id="loading">
             <p>Syncing your accounts...</p>
         </div>
-
+    
         <div class="dashboard-container" id="dashboardUI" style="display: none;">
             <div class="tabs-header">
                 <button class="tab-btn active" onclick="openTab(event, 'wallet')">Wallet</button>
                 <button class="tab-btn" onclick="openTab(event, 'pocket')">Pocket</button>
                 <button class="tab-btn" onclick="openTab(event, 'loan')">Loan</button>
             </div>
-
+    
             <div id="wallet" class="tab-content active">
                 <div class="balance-card">
                     <span>Main Balance</span>
                     <div class="balance-amount">R<span id="walletBalanceDisplay">0.00</span></div>
                 </div>
                 <div class="action-grid">
-                    <button class="action-btn" disabled style="opacity: 0.5; cursor: not-allowed; filter: grayscale(1);">📥 Deposit</button>
-                    <button class="action-btn" disabled style="opacity: 0.5; cursor: not-allowed; filter: grayscale(1);">📥 Withdraw</button>
+                    <button class="action-btn" onclick="openModal('deposit', 'wallet')">📥 Deposit</button>
+                    <button class="action-btn" onclick="openModal('withdraw', 'wallet')">📤 Withdraw</button>
+                </div>
+
+                <div class="history-section" style="margin-top: 30px;">
+                    <h3 style="color: #1e293b; margin-bottom: 15px;">Wallet Activity</h3>
+                    <div id="walletHistoryList" class="history-list">
+                        <p style="color: #64748b; font-size: 0.9rem;">Loading history...</p>
+                    </div>
                 </div>
             </div>
-
+    
             <div id="pocket" class="tab-content">
                 <div class="balance-card" style="background: var(--primary-emerald);">
                     <span>Pocket Savings</span>
@@ -165,19 +172,22 @@
                 <div class="action-grid">
                     <button class="action-btn" onclick="openModal('deposit', 'pocket')">📥 Deposit</button>
                     <button class="action-btn" onclick="openModal('withdraw', 'pocket')">📤 Withdrawal</button>
-                    <button class="action-btn" onclick="openModal('trade')">📈 Trade</button>                </div>
-            </div>
+                    <button class="action-btn" onclick="openModal('trade')">📈 Trade</button>                
+                </div>
 
+                <div class="history-section" style="margin-top: 30px;">
+                    <h3 style="color: #1e293b; margin-bottom: 15px;">Pocket Activity</h3>
+                    <div id="pocketHistoryList" class="history-list">
+                        <p style="color: #64748b; font-size: 0.9rem;">Loading history...</p>
+                    </div>
+                </div>
+            </div>
+    
             <div id="loan" class="tab-content">
                 <h2>Loan Registration</h2>
                 <p>Form content would go here...</p>
             </div>
-            <div class="history-section" style="margin-top: 30px; padding: 0 20px;">
-                <h3 style="color: #1e293b; margin-bottom: 15px;">Recent Activity</h3>
-                <div id="historyList" class="history-list">
-                    <p style="color: #64748b; font-size: 0.9rem;">Loading history...</p>
-                </div>
-            </div>
+    
             <div style="padding: 20px; text-align: center;">
                 <a href="#" onclick="handleLogout()" style="color: #ef4444; font-weight: 500; text-decoration: none;">Sign Out</a>
             </div>
