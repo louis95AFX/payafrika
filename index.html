@@ -242,100 +242,123 @@
       </section>
 
       <style>
-        /* Desktop: Hide the button inside the calculator */
-        .calc-mobile-button {
-          display: none;
-        }
+  /* Base Styles */
+  .calc-mobile-button {
+    display: none;
+  }
+
+  /* Mobile: Screen sizes 768px and below */
+  @media (max-width: 768px) {
+    /* Ensure the main flex wrapper centers items vertically */
+    .loan-flex-wrapper {
+      justify-content: center !important;
+      align-items: center !important;
+      text-align: center;
+      flex-direction: column; /* Ensure items stack vertically */
+    }
+
+    /* Remove the negative margin that pulls content to the left */
+    .trade-content {
+      margin-left: 0 !important;
+      padding: 0 !important;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .trade-content .trade-info {
+      display: none !important;
+    }
+
+    /* Calculator Container Centering */
+    .calc-container {
+      margin: 0 auto !important; /* Forces horizontal centering */
+      width: 100%;
+      max-width: 450px; /* Constrains width for better mobile look */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    /* Show the button inside the calculator card */
+    .calc-mobile-button {
+      display: block;
+      margin-top: 25px;
+      width: 100%;
+    }
+
+    .calc-mobile-button .btn-get-started {
+      display: inline-block;
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+</style>
+
+<section id="loans" class="section-padding scroll-reveal">
+  <div class="video-bg-wrapper">
+    <img src="money.png" alt="" class="bg-image" />
+    <div class="video-overlay dark-tint"></div>
+  </div>
+
+  <div class="container">
+    <div class="info-body" style="text-align: center; margin-bottom: 40px;">
+      <p class="lead-text white-text" style="font-size: 2rem; font-weight: 700; max-width: 800px; margin: 0 auto;">
+        Flexible personal and business loans tailored to meet your unique financial needs.
+      </p>
+    </div>
+
+    <div class="loan-flex-wrapper" style="display: flex; align-items: center; justify-content: space-between; gap: 40px; flex-wrap: wrap;">
       
-        /* Mobile: Screen sizes 768px and below */
-        @media (max-width: 768px) {
-          /* Hide the original left-side button */
-          .trade-content .trade-info {
-            display: none !important;
-          }
-      
-          /* Show the button inside the calculator card */
-          .calc-mobile-button {
-            display: block;
-            margin-top: 25px;
-            text-align: center;
-          }
-      
-          /* Optional: Make the button full-width on mobile for better UX */
-          .calc-mobile-button .btn-get-started {
-            display: block;
-            width: 100%;
-          }
-      
-          /* Fix the negative margin on mobile to prevent horizontal scroll issues */
-          .trade-content {
-            margin-left: 0 !important;
-          }
-        }
-      </style>
-      
-      <section id="loans" class="section-padding scroll-reveal">
-        <div class="video-bg-wrapper">
-          <img src="money.png" alt="" class="bg-image" />
-          <div class="video-overlay dark-tint"></div>
+      <div class="trade-content" style="flex: 1; min-width: 300px; margin-left: -40px;">
+        <div class="card-image-wrapper" style="margin-bottom: 20px;">
+          <img src="card1.png" alt="Loan Services" style="max-width: 100%; border-radius: 12px;"/>
         </div>
-      
-        <div class="container">
-          <div class="info-body" style="text-align: center; margin-bottom: 40px;">
-            <p class="lead-text white-text" style="font-size: 2rem; font-weight: 700; max-width: 800px; margin: 0 auto;">
-              Flexible personal and business loans tailored to meet your unique financial needs.
-            </p>
-          </div>
-      
-          <div class="loan-flex-wrapper" style="display: flex; align-items: center; justify-content: space-between; gap: 40px; flex-wrap: wrap;">
-            
-            <div class="trade-content" style="flex: 1; min-width: 300px; margin-left: -40px;">
-              <div class="card-image-wrapper" style="margin-bottom: 20px;">
-                <img src="card1.png" alt="Loan Services" style="max-width: 100%; border-radius: 12px;"/>
-              </div>
-              <div class="trade-info" style="text-align: left; padding-left: 40px;">
-                <a href="#contact" class="btn-get-started gold-btn shadow-btn">Get Financed</a>
-              </div>
-            </div>
-      
-            <div class="calc-container" style="flex: 1; min-width: 320px; max-width: 600px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); padding: 30px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); color: white;">
-              <h3 style="margin-bottom: 20px; color: #fff;">Loan Calculator</h3>
-              
-              <div class="calc-input-group" style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 10px; font-size: 0.9rem; opacity: 0.8;">Loan Amount (R)</label>
-                <div id="amtVal" style="font-weight: bold; margin-bottom: 5px; color: var(--green);">R 5,000</div>
-                <input type="range" id="loanRange" min="1000" max="100000" step="500" value="5000" style="width: 100%; cursor: pointer;">
-              </div>
-      
-              <div class="calc-input-group" style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 10px; font-size: 0.9rem; opacity: 0.8;">Repayment Term (Months)</label>
-                <div id="termVal" style="font-weight: bold; margin-bottom: 5px; color: var(--green);">3 Months</div>
-                <input type="range" id="termRange" min="1" max="60" step="1" value="3" style="width: 100%; cursor: pointer;">
-              </div>
-      
-              <div class="calc-result" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 10px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85rem; opacity: 0.7;">
-                  <span>Initiation Fee (2.8%):</span>
-                  <span id="initiationFeeVal" style="color: var(--green); font-weight: 600;">R 0</span>
-                </div>
-                
-                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 0.85rem; opacity: 0.7;">
-                  <span>Monthly Service Fee (0.12%):</span>
-                  <span id="serviceFeeVal" style="color: var(--green); font-weight: 600;">R 0</span>
-                </div>
-      
-                <span style="font-size: 0.85rem; opacity: 0.7;">Estimated Monthly Repayment:</span>
-                <div id="monthlyResult" style="font-size: 2.2rem; font-weight: 800; color: #fff; margin-top: 5px;">R 2,353</div>
-              </div>
-      
-              <div class="calc-mobile-button">
-                <a href="#contact" class="btn-get-started gold-btn shadow-btn">Get Financed</a>
-              </div>
-            </div>
-      
-          </div>
+        <div class="trade-info" style="text-align: left; padding-left: 40px;">
+          <a href="#contact" class="btn-get-started gold-btn shadow-btn">Get Financed</a>
         </div>
-      </section>
+      </div>
+
+      <div class="calc-container" style="flex: 1; min-width: 320px; max-width: 600px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); padding: 30px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); color: white; text-align: center;">
+        <h3 style="margin-bottom: 20px; color: #fff;">Loan Calculator</h3>
+        
+        <div class="calc-input-group" style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 10px; font-size: 0.9rem; opacity: 0.8;">Loan Amount (R)</label>
+          <div id="amtVal" style="font-weight: bold; margin-bottom: 5px; color: var(--green);">R 5,000</div>
+          <input type="range" id="loanRange" min="1000" max="100000" step="500" value="5000" style="width: 100%; cursor: pointer;">
+        </div>
+
+        <div class="calc-input-group" style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 10px; font-size: 0.9rem; opacity: 0.8;">Repayment Term (Months)</label>
+          <div id="termVal" style="font-weight: bold; margin-bottom: 5px; color: var(--green);">3 Months</div>
+          <input type="range" id="termRange" min="1" max="60" step="1" value="3" style="width: 100%; cursor: pointer;">
+        </div>
+
+        <div class="calc-result" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 10px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85rem; opacity: 0.7;">
+            <span>Initiation Fee (2.8%):</span>
+            <span id="initiationFeeVal" style="color: var(--green); font-weight: 600;">R 140</span>
+          </div>
+          
+          <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 0.85rem; opacity: 0.7;">
+            <span>Monthly Service Fee (0.12%):</span>
+            <span id="serviceFeeVal" style="color: var(--green); font-weight: 600;">R 6</span>
+          </div>
+
+          <span style="font-size: 0.85rem; opacity: 0.7;">Estimated Monthly Repayment:</span>
+          <div id="monthlyResult" style="font-size: 2.2rem; font-weight: 800; color: #fff; margin-top: 5px;">R 2,353</div>
+        </div>
+
+        <div class="calc-mobile-button">
+          <a href="#contact" class="btn-get-started gold-btn shadow-btn">Get Financed</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
      
 
       <section id="b2b-trade">

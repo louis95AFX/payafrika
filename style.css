@@ -714,6 +714,74 @@ position: relative;
     overflow: hidden;
 }
 
+@media (max-width: 768px) {
+    /* 1. Center the entire section content */
+    .trade-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    /* 2. Center the text content area */
+    .trade-info {
+        margin-bottom: 40px;
+        padding: 0 20px;
+        width: 100%;
+    }
+
+    /* 3. Ensure the cards grid is centered */
+    .b2b-cards {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        gap: 20px;
+    }
+
+    /* 4. Fix individual card alignment */
+    .b2b-card {
+        width: 100%;
+        max-width: 350px; /* Keeps cards from stretching too wide */
+        margin: 0 auto !important; /* Forces horizontal centering */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Reset the main section containers */
+    .container, 
+    .trade-container, 
+    .loan-container {
+        width: 100% !important;
+        max-width: 100vw !important;
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        margin: 0 auto !important;
+        overflow-x: hidden; /* Prevents tiny accidental side-scrolls */
+    }
+
+    /* Force the flex wrapper to center its children */
+    .trade-container,
+    .loan-flex-wrapper {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+    }
+}
+@media (max-width: 768px) {
+    .trade-title {
+        width: 100%;
+        text-align: center;
+        margin-left: 0;
+        margin-right: 0px;
+    }
+}
 .trade-container {
     display: grid;
     grid-template-columns: 1.1fr 1fr;
@@ -2702,7 +2770,6 @@ p.sub-text.white-text {
 }
 
 
-
 /* ===== SECTION BASE ===== */
 .digital-finance {
     position: relative;
@@ -3968,3 +4035,12 @@ body.no-scroll { overflow: hidden; }
     }
 }
 
+@media (max-width: 768px) {
+    .loan-flex-wrapper, .trade-content, .calc-container {
+        width: 100%;
+        max-width: 100%;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        justify-content: center !important;
+    }
+}
