@@ -1,0 +1,287 @@
+/* =========================
+   AUTH PAGE BASE
+========================= */
+.auth-page {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    min-height: 100vh;
+    display: flex;
+}
+
+/* Layout */
+.auth-wrapper {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* =========================
+   LEFT SIDE (VIDEO)
+========================= */
+.auth-left {
+    flex: 1.2;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    color: white;
+}
+
+.auth-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.auth-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.6));
+}
+
+.auth-content {
+    position: relative;
+    z-index: 2;
+    max-width: 480px;
+}
+
+.auth-logo {
+    height: 50px;
+    margin-bottom: 30px;
+}
+
+.auth-content h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.auth-content h1 span {
+    color: #22c55e;
+}
+
+.auth-content p {
+    margin-top: 20px;
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+/* =========================
+   RIGHT SIDE (FORM)
+========================= */
+.auth-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+/* Glass Card */
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 40px;
+    border-radius: 20px;
+
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    animation: fadeUp 0.6s ease;
+}
+
+/* =========================
+   TABS
+========================= */
+.auth-tabs {
+    display: flex;
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 12px;
+    background: none;
+    border: none;
+    font-weight: 600;
+    color: #94a3b8;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.tab-btn.active {
+    color: white;
+}
+
+/* Sliding indicator */
+.tab-indicator {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+    height: 3px;
+    background: #22c55e;
+    transition: 0.3s;
+}
+
+/* =========================
+   FORM
+========================= */
+.auth-form {
+    display: none;
+}
+
+.auth-form.active {
+    display: block;
+}
+
+.auth-form h2 {
+    color: white;
+    margin-bottom: 5px;
+}
+
+.auth-subtext {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 25px;
+}
+
+/* =========================
+   FLOATING INPUTS
+========================= */
+.form-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 16px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: transparent;
+    color: white;
+    outline: none;
+    font-size: 0.95rem;
+}
+
+.form-group label {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 0.85rem;
+    pointer-events: none;
+    transition: 0.3s;
+}
+
+/* Floating effect */
+.form-group input:focus + label,
+.form-group input:valid + label {
+    top: 6px;
+    font-size: 0.7rem;
+    color: #22c55e;
+}
+
+/* Focus glow */
+.form-group input:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
+/* Row */
+.form-row .form-group {
+    flex: 1;
+}
+
+/* =========================
+   OPTIONS
+========================= */
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+}
+
+.remember {
+    color: #94a3b8;
+}
+
+.forgot-link {
+    color: #22c55e;
+    text-decoration: none;
+}
+
+/* =========================
+   BUTTON
+========================= */
+.btn-primary {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+
+    transition: 0.3s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3);
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================
+   MOBILE
+========================= */
+@media (max-width: 992px) {
+    .auth-left {
+        display: none;
+    }
+
+    .auth-right {
+        flex: 1;
+        padding: 20px;
+    }
+
+    .auth-card {
+        padding: 25px;
+    }
+}
+
+.auth-logo {
+    width: 300px;
+    height: auto;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+    transition: transform 0.3s ease;
+    margin-left: -40px;
+}
+
+.auth-logo:hover {
+    transform: scale(1.02); /* Subtle interaction effect */
+}

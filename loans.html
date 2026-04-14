@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | PayAfrika</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="loans.css">
+</head>
+<body class="auth-page">
+
+<div class="auth-wrapper">
+
+    <!-- LEFT SIDE (VISUAL / BRANDING) -->
+    <div class="auth-left">
+        <video autoplay muted loop playsinline class="auth-video">
+            <source src="payafrika.mp4" type="video/mp4">
+        </video>
+
+        <div class="auth-overlay"></div>
+
+        <div class="auth-content">
+            <img src="bgp.png" alt="PayAfrika Logo" class="auth-logo w-48 h-auto mb-8">
+            <h1>
+                Smart Finance.<br>
+                <span>One Platform.</span>
+            </h1>
+
+            <p>
+                Sign in to access your account and loan offers            </p>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE (FORM) -->
+    <div class="auth-right">
+        <div class="auth-card">
+
+            <!-- Tabs -->
+            <div class="auth-tabs">
+                <button class="tab-btn active" onclick="toggleAuth('login')">Login</button>
+                <button class="tab-btn" onclick="toggleAuth('register')">Register</button>
+                <div class="tab-indicator"></div>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <form id="loginForm" class="auth-form active">
+                <h2>Welcome Back</h2>
+                <p class="auth-subtext">Sign in to continue</p>
+            
+                <div class="form-group">
+                    <input type="email" name="email" required>
+                    <label>Email Address</label>
+                </div>
+            
+                <div class="form-group">
+                    <input type="password" name="password" required>
+                    <label>Password</label>
+                </div>
+            
+                <div class="form-options">
+                    <label class="remember">
+                        <input type="checkbox" name="remember"> Remember me
+                    </label>
+                    <a href="#" class="forgot-link">Forgot?</a>
+                </div>
+            
+                <button type="submit" class="btn-primary">Sign In</button>
+            </form>
+            <!-- REGISTER FORM -->
+            <form id="registerForm" class="auth-form">
+                <h2>Create Account</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" name="first_name" required> <label>First Name</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="surname" required> <label>Surname</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="email" name="email" required> <label>Email Address</label>
+                </div>
+                <div class="form-group">
+                    <input type="tel" name="phone" required> <label>Phone Number</label>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="reg_password" name="password" required> <label>Password</label>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="confirm_password" required> <label>Confirm Password</label>
+                </div>
+                <button type="submit" class="btn-primary">Create Account</button>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="loans.js"></script>
+</body>
+</html>
