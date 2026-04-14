@@ -241,6 +241,39 @@
         </div>
       </section>
 
+      <style>
+        /* Desktop: Hide the button inside the calculator */
+        .calc-mobile-button {
+          display: none;
+        }
+      
+        /* Mobile: Screen sizes 768px and below */
+        @media (max-width: 768px) {
+          /* Hide the original left-side button */
+          .trade-content .trade-info {
+            display: none !important;
+          }
+      
+          /* Show the button inside the calculator card */
+          .calc-mobile-button {
+            display: block;
+            margin-top: 25px;
+            text-align: center;
+          }
+      
+          /* Optional: Make the button full-width on mobile for better UX */
+          .calc-mobile-button .btn-get-started {
+            display: block;
+            width: 100%;
+          }
+      
+          /* Fix the negative margin on mobile to prevent horizontal scroll issues */
+          .trade-content {
+            margin-left: 0 !important;
+          }
+        }
+      </style>
+      
       <section id="loans" class="section-padding scroll-reveal">
         <div class="video-bg-wrapper">
           <img src="money.png" alt="" class="bg-image" />
@@ -265,7 +298,7 @@
               </div>
             </div>
       
-            <div class="calc-container  max-width: 600px; width: 100%;" style="flex: 1; min-width: 320px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); padding: 30px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); color: white;">
+            <div class="calc-container" style="flex: 1; min-width: 320px; max-width: 600px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); padding: 30px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); color: white;">
               <h3 style="margin-bottom: 20px; color: #fff;">Loan Calculator</h3>
               
               <div class="calc-input-group" style="margin-bottom: 20px;">
@@ -292,8 +325,11 @@
                 </div>
       
                 <span style="font-size: 0.85rem; opacity: 0.7;">Estimated Monthly Repayment:</span>
-                <div id="monthlyResult" style="font-size: 2.2rem; font-weight: 800; color: #fff; margin-top: 5px;">R 0</div>
-            
+                <div id="monthlyResult" style="font-size: 2.2rem; font-weight: 800; color: #fff; margin-top: 5px;">R 2,353</div>
+              </div>
+      
+              <div class="calc-mobile-button">
+                <a href="#contact" class="btn-get-started gold-btn shadow-btn">Get Financed</a>
               </div>
             </div>
       
