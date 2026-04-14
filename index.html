@@ -295,6 +295,23 @@
       box-sizing: border-box;
     }
   }
+  @media (max-width: 768px) {
+    .trade-title {
+        font-size: 2rem !important;
+        line-height: 1.2;
+        padding-right: 15px; /* Fixes the 't' cropping */
+        text-align: center;
+        width: 100%;
+        margin-left: 0 !important;
+    }
+    
+    .trade-content {
+        margin-left: 0 !important; /* Removes the -40px pulling it left */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+  }
 </style>
 
 <section id="loans" class="section-padding scroll-reveal">
@@ -317,7 +334,7 @@
           <img src="card1.png" alt="Loan Services" style="max-width: 100%; border-radius: 12px;"/>
         </div>
         <div class="trade-info" style="text-align: left; padding-left: 40px;">
-          <a href="#contact" class="btn-get-started gold-btn shadow-btn">Get Financed</a>
+          <a href="loans.html" class="btn-get-started gold-btn shadow-btn">Get Financed</a>
         </div>
       </div>
 
@@ -327,8 +344,7 @@
         <div class="calc-input-group" style="margin-bottom: 20px;">
           <label style="display: block; margin-bottom: 10px; font-size: 0.9rem; opacity: 0.8;">Loan Amount (R)</label>
           <div id="amtVal" style="font-weight: bold; margin-bottom: 5px; color: var(--green);">R 5,000</div>
-          <input type="range" id="loanRange" min="1000" max="100000" step="500" value="5000" style="width: 100%; cursor: pointer;">
-        </div>
+          <input type="range" id="loanRange" min="1000" max="500000" step="1000" value="10000">        </div>
 
         <div class="calc-input-group" style="margin-bottom: 20px;">
           <label style="display: block; margin-bottom: 10px; font-size: 0.9rem; opacity: 0.8;">Repayment Term (Months)</label>
@@ -850,12 +866,13 @@
     
         <!-- CENTER: SERVICES -->
         <div class="footer-col">
-          <h4>Services</h4>
+          <h4>Legal</h4>
           <ul>
-            <li><a href="#">B2B Payments</a></li>
-            <li><a href="#">Loans & Funding</a></li>
-            <li><a href="#">Crypto & Forex</a></li>
-            <li><a href="#">Cross-Border Payments</a></li>
+            <li><a href="#">Terms of use</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">AML & CFT Policy</a></li>
+            <li><a href="#">Law Enforcement Request Guidelines</a></li>
+            <li><a href="#">POPIA</a></li>  
           </ul>
         </div>
     
