@@ -3388,6 +3388,8 @@ p.sub-text.white-text {
 
 input[type="range"] {
     accent-color: var(--green); /* Matches your PayAfrika theme */
+    width: 100%;
+    cursor: pointer;
 }
 
 /* Ensure the layout looks good on phones */
